@@ -24,6 +24,7 @@ class Register {
                 header("Location: /");
             } catch (\Exception $e) {
                 $this->sessionDAL->setInputFeedbackMessage($e->getMessage());
+                // TODO fix string dependency
                 header("Location: /?register");
             }
         }

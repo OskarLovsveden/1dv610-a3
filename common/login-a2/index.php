@@ -25,7 +25,7 @@ require_once('model/DAL/UserDAL.php');
 // Create DAL
 $database = new \Model\DAL\Database();
 $sessionDAL = new \Model\DAL\SessionDAL();
-$cookieDAL = new \Model\DAL\CookieDAL($database, $sessionDAL);
+$cookieDAL = new \Model\DAL\CookieDAL($database);
 $userDAL = new \Model\DAL\UserDAL($database);
 
 // Create view objects
@@ -41,13 +41,20 @@ $cookieDAL->isUserCookieValid();
 
 $sessionExists = $sessionDAL->isUserSessionActive();
 $cookieExists = $cookieDAL->isUserCookieActive();
-$validBrowser = $cookieDAL->userBrowserValid();
+$validBrowser;
+
+try {
+    $validBrowser = $cookieDAL->userBrowserValid();
+} catch (\Exception $e) {
+    $this->sessionDAL->setInputFeedbackMessage($e->getMessage());
+}
 
 $userLoggedIn = $sessionExists || $cookieExists && $validBrowser;
 
 if ($userLoggedIn) {
     $loginController->doLogout();
 } else {
+    // TODO fix string dependency
     if (isset($_GET["register"])) {
         $registerController->doRegister();
     } else {
@@ -56,8 +63,3 @@ if ($userLoggedIn) {
 }
 
 $layoutView->render($userLoggedIn, $loginView, $registerView, $dateTimeView);
-
-// TEMP
-if (isset($_SERVER, $_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] == 'localhost') {
-    // development
-}
