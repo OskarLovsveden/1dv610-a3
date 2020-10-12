@@ -8,8 +8,9 @@ class Login {
             $cookieExists = $cookieDAL->isUserCookieActive();
             $validBrowser = $cookieDAL->userBrowserValid();
             return $sessionExists || $cookieExists && $validBrowser;
-        } catch (\Throwable $th) {
-            // Handle error 
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+            exit;
         }
     }
 }
