@@ -110,6 +110,7 @@ class CookieDAL {
 
     public function isUserCookieValid() {
         $userCookie = $this->getUserCookie($_COOKIE[self::$cookieNameKey]);
+
         $validPassword = $userCookie[self::$rowPassword] === $_COOKIE[self::$cookiePasswordKey];
         $cookieSet = isset($_COOKIE[self::$cookieNameKey]);
 
