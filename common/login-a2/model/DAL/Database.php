@@ -25,6 +25,15 @@ class Database {
         }
     }
 
+    public function getConnection() {
+        return new \mysqli(
+            $this->hostname,
+            $this->username,
+            $this->password,
+            $this->database
+        );
+    }
+
     public function getHostname() {
         return $this->hostname;
     }

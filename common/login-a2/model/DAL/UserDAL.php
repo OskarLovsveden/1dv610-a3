@@ -15,7 +15,7 @@ class UserDAL {
     }
 
     public function createTableIfNotExists() {
-        $connection = new \mysqli($this->database->getHostname(), $this->database->getUsername(), $this->database->getPassword(), $this->database->getDatabase());
+        $connection = $this->database->getConnection();
 
         $sql = "CREATE TABLE IF NOT EXISTS " . self::$table . " (
             " . self::$rowUsername . " VARCHAR(30) NOT NULL UNIQUE,
@@ -23,6 +23,7 @@ class UserDAL {
             )";
 
         $connection->query($sql);
+        $connection->close();
     }
 
     public function registerUser(\Model\User $user) {
@@ -31,12 +32,7 @@ class UserDAL {
         $username = $user->getUsername();
         $password = password_hash($user->getPassword(), PASSWORD_BCRYPT);
 
-        $connection = new \mysqli(
-            $this->database->getHostname(),
-            $this->database->getUsername(),
-            $this->database->getPassword(),
-            $this->database->getDatabase()
-        );
+        $connection = $this->database->getConnection();
 
         if ($this->userExists($username)) {
             throw new \Exception("User exists, pick another username.");
@@ -45,18 +41,14 @@ class UserDAL {
         $sql = "INSERT INTO " . self::$table . " (" . self::$rowUsername . ", " . self::$rowPassword . ") VALUES ('" . $username . "', '" . $password . "')";
 
         $connection->query($sql);
+        $connection->close();
     }
 
     public function loginUser(\Model\Credentials $credentials) {
         $username = $credentials->getUsername();
         $password = $credentials->getPassword();
 
-        $connection = new \mysqli(
-            $this->database->getHostname(),
-            $this->database->getUsername(),
-            $this->database->getPassword(),
-            $this->database->getDatabase()
-        );
+        $connection = $this->database->getConnection();
 
         if ($this->userExists($username)) {
             $sql = "SELECT " . self::$rowPassword . " FROM " . self::$table . " WHERE " . self::$rowUsername . " LIKE BINARY '" . $username . "'";
@@ -70,15 +62,12 @@ class UserDAL {
         } else {
             throw new \Exception("Wrong name or password");
         }
+
+        $connection->close();
     }
 
     private function userExists(string $username): bool {
-        $connection = new \mysqli(
-            $this->database->getHostname(),
-            $this->database->getUsername(),
-            $this->database->getPassword(),
-            $this->database->getDatabase()
-        );
+        $connection = $this->database->getConnection();
 
         $query = "SELECT * FROM " . self::$table . " WHERE " . self::$rowUsername . " LIKE BINARY '" . $username . "'";
         $userExists = 0;
@@ -89,7 +78,6 @@ class UserDAL {
             $userExists = $stmt->num_rows;
             $stmt->close();
         }
-
 
         return $userExists == 1;
     }

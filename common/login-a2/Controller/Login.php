@@ -3,6 +3,7 @@
 namespace Controller;
 
 require_once('model/DAL/UserDAL.php');
+require_once('model/RememberMeCookie.php');
 
 class Login {
     private $loginView;
@@ -27,8 +28,16 @@ class Login {
                 $this->userDAL->loginUser($credentials);
 
                 if ($credentials->getKeepUserLoggedIn()) {
-                    $this->cookieDAL->setUserCookies($username);
-                    $this->cookieDAL->saveUserCookie();
+                    $rememberMeCookie = new \Model\RememberMeCookie($username);
+                    $cookieName = $rememberMeCookie->getCookieName();
+                    $cookiePassword = $rememberMeCookie->getCookiePassword();
+
+                    var_dump("cookieName från remme", $cookieName);
+                    var_dump("cookiePass från remme", $cookiePassword);
+
+                    $this->loginView->setUserCookies($cookieName, $cookiePassword);
+                    $this->cookieDAL->saveUserCookie($cookieName, $cookiePassword);
+
                     $this->sessionDAL->setInputFeedbackMessage("Welcome and you will be remembered");
                 } else {
                     $this->sessionDAL->setInputFeedbackMessage("Welcome");
@@ -36,7 +45,7 @@ class Login {
 
                 $this->sessionDAL->setUserSession($username);
                 $this->sessionDAL->setUserBrowser();
-                $this->loginView->reloadPage();
+                // $this->loginView->reloadPage();
             } catch (\Exception $e) {
                 $this->sessionDAL->setInputFeedbackMessage($e->getMessage());
                 $this->loginView->reloadPage();
@@ -50,8 +59,14 @@ class Login {
                 $this->sessionDAL->unsetUserSession();
             }
 
-            if ($this->cookieDAL->isUserCookieActive()) {
-                $this->cookieDAL->unsetUserCookies();
+            if ($this->loginView->isUserCookieNameSet()) {
+                $cookieName = $this->loginView->getUserCookieName();
+                $cookiePassword = $this->loginView->getUserCookiePassword();
+
+                if ($this->cookieDAL->validCookie($cookieName, $cookiePassword)) {
+                    // if ($this->cookieDAL->isUserCookieActive($cookieName, $cookiePassword)) {
+                    $this->loginView->unsetUserCookies();
+                }
             }
 
             $this->sessionDAL->setInputFeedbackMessage("Bye bye!");

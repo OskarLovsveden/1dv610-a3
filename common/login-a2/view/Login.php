@@ -14,6 +14,8 @@ class Login {
 	private static $password = 'LoginView::Password';
 	private static $keep = 'LoginView::KeepMeLoggedIn';
 	private static $messageId = 'LoginView::Message';
+	private static $cookieNameKey = 'LoginView::CookieName';
+	private static $cookiePasswordKey = 'LoginView::CookiePassword';
 
 	private $cookieDAL;
 	private $sessionDAL;
@@ -34,9 +36,13 @@ class Login {
 		$message = $this->sessionDAL->getInputFeedbackMessage();
 
 		$sessionExists = $this->sessionDAL->isUserSessionActive();
-		$cookieExists = $this->cookieDAL->isUserCookieActive();
+		// $cookieExists = $this->cookieDAL->isUserCookieActive($this->getUserCookieName(), $this->getUserCookiePassword());
 
-		if (!$sessionExists && $cookieExists) {
+		// if (!$sessionExists && $cookieExists) {
+		// 	$message = "Welcome back with cookie";
+		// }
+
+		if ($this->isUserCookieNameSet()) {
 			$message = "Welcome back with cookie";
 		}
 
@@ -85,6 +91,40 @@ class Login {
 
 	public function reloadPage() {
 		header("Location: /");
+	}
+
+	public function setUserCookies($cookieName, $cookiePassword) {
+		var_dump("kakan att sätta: ", $cookiePassword);
+
+		setcookie(self::$cookieNameKey, $cookieName, time() + (86400 * 30), "/");
+		setcookie(self::$cookiePasswordKey, $cookiePassword, time() + (86400 * 30), "/");
+
+		echo "SET COOKIE VIEW";
+		exit;
+
+		// $this->cookieUsername = $cookieUsername;
+		// $this->cookiePassword = $cookiePassword;
+	}
+
+	public function unsetUserCookies() {
+		setcookie(self::$cookieNameKey, "", time() - 3600);
+		setcookie(self::$cookiePasswordKey, "", time() - 3600);
+	}
+
+	public function isUserCookieNameSet() {
+		return isset($_COOKIE[self::$cookieNameKey]);
+	}
+
+	public function getUserCookieName() {
+		return $_COOKIE[self::$cookieNameKey];
+	}
+
+	public function isUserCookiePasswordSet() {
+		return isset($_COOKIE[self::$cookiePasswordKey]);
+	}
+
+	public function getUserCookiePassword() {
+		return $_COOKIE[self::$cookiePasswordKey];
 	}
 
 	/**
