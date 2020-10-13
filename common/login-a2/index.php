@@ -42,7 +42,6 @@ $userLoggedIn = $loginController->isUserLoggedIn();
 if ($userLoggedIn) {
     $loginController->doLogout();
 } else {
-    // TODO fix string dependency
     if ($layoutView->wantsToRegister()) {
         $registerController->doRegister();
     } else {

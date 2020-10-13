@@ -9,6 +9,8 @@ class Register {
 	private static $passwordRepeat = 'RegisterView::PasswordRepeat';
 	private static $messageId = 'RegisterView::Message';
 
+	private static $registerURL = "?register";
+
 	private $registerFormErrors = array();
 
 	private $sessionDAL;
@@ -76,6 +78,10 @@ class Register {
 		return $response;
 	}
 
+	public function getRegisterURL() {
+		return self::$registerURL;
+	}
+
 	/**
 	 * Generate HTML code on the output buffer for the logout button
 	 * @param $message, String output message
@@ -84,7 +90,7 @@ class Register {
 	private function generateRegisterFormHTML($message, $usernameInputValue) {
 		return '
         <h2>Register new user</h2>
-        <form action="?register" method="post" enctype="multipart/form-data">
+        <form action="' . self::$registerURL . '" method="post" enctype="multipart/form-data">
             <fieldset>
             <legend>Register a new user - Write username and password</legend>
                 <p id="' . self::$messageId . '">' . $message . '</p>

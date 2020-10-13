@@ -85,7 +85,7 @@ class Login {
 
     public function doLogout() {
         if ($this->loginView->userWantsToLogout()) {
-            if ($this->sessionDAL->isUserSessionActive() && $this->sessionDAL->userBrowserValid($this->userBrowser)) {
+            if ($this->sessionDAL->isUserSessionActive()) {
                 $this->sessionDAL->unsetUserSession();
             }
 
