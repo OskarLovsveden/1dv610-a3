@@ -17,10 +17,10 @@ class Login {
 	private static $cookieNameKey = 'LoginView::CookieName';
 	private static $cookiePasswordKey = 'LoginView::CookiePassword';
 
-	private $sessionDAL;
+	private $authenticator;
 
-	public function __construct(\Model\DAL\SessionDAL $sessionDAL) {
-		$this->sessionDAL = $sessionDAL;
+	public function __construct(\Authenticator $authenticator) {
+		$this->authenticator = $authenticator;
 	}
 
 	/**
@@ -31,7 +31,7 @@ class Login {
 	 * @return  void BUT writes to standard output and cookies!
 	 */
 	public function response(bool $isLoggedIn) {
-		$message = $this->sessionDAL->getInputFeedbackMessage();
+		$message = $this->authenticator->getInputFeedbackMessage();
 
 		$response = "";
 
@@ -40,8 +40,8 @@ class Login {
 		} else {
 			$usernameInputValue = "";
 
-			if ($this->sessionDAL->isInputUserValueSet()) {
-				$usernameInputValue = $this->sessionDAL->getInputUserValue();
+			if ($this->authenticator->isInputUserValueSet()) {
+				$usernameInputValue = $this->authenticator->getInputUserValue();
 			}
 
 			$response .= $this->generateLoginFormHTML($message, $usernameInputValue);
@@ -54,7 +54,7 @@ class Login {
 	}
 
 	public function validateLoginForm() {
-		$this->sessionDAL->setInputUserValue($this->getRequestUserName());
+		$this->authenticator->setInputUserValue($this->getRequestUserName());
 
 		if (!$this->getRequestUserName()) {
 			throw new \Exception("Username is missing");
@@ -77,7 +77,7 @@ class Login {
 	}
 
 	public function reloadPage() {
-		header("Location: /");
+		header("Location: /a2");
 	}
 
 	public function setUserCookies($cookieName, $cookiePassword) {
@@ -86,8 +86,8 @@ class Login {
 	}
 
 	public function unsetUserCookies() {
-		setcookie(self::$cookieNameKey, "", time() - 3600);
-		setcookie(self::$cookiePasswordKey, "", time() - 3600);
+		setcookie(self::$cookieNameKey, "", time() - 3600, "/");
+		setcookie(self::$cookiePasswordKey, "", time() - 3600, "/");
 	}
 
 	public function isUserCookieNameSet() {

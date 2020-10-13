@@ -7,26 +7,24 @@ require_once('model/RememberMeCookie.php');
 
 class Login {
     private $loginView;
-    private $sessionDAL;
-    private $cookieDAL;
-    private $userDAL;
+    private $authenticator;
     private $userBrowser;
 
-    public function __construct(\View\Login $loginView, \Model\DAL\CookieDAL $cookieDAL, \Model\DAL\SessionDAL $sessionDAL, \Model\DAL\UserDAL $userDAL) {
+    public function __construct(\View\Login $loginView, \Authenticator $authenticator) {
         $this->loginView = $loginView;
-        $this->sessionDAL = $sessionDAL;
-        $this->cookieDAL = $cookieDAL;
-        $this->userDAL = $userDAL;
+        $this->authenticator = $authenticator;
         $this->userBrowser = $_SERVER['HTTP_USER_AGENT'];
     }
 
     public function isUserLoggedIn(): bool {
-        if ($this->sessionDAL->isUserSessionActive()) {
+        if ($this->authenticator->isUserSessionActive()) {
             return true;
         }
         if ($this->checkIfCookieExists()) {
             $this->tryToLoginWithCookie();
-            $this->sessionDAL->setUserSession($this->loginView->getUserCookieName());
+
+            $cookieUsername = $this->loginView->getUserCookieName();
+            $this->authenticator->setUserSession($cookieUsername);
             $this->loginView->reloadPage();
         }
         return false;
@@ -41,10 +39,10 @@ class Login {
         $cookiePassword = $this->loginView->getUserCookiePassword();
 
         try {
-            $this->cookieDAL->validCookie($cookieName, $cookiePassword, $this->userBrowser);
-            $this->sessionDAL->setInputFeedbackMessage("Welcome back with cookie");
+            $this->authenticator->validCookie($cookieName, $cookiePassword, $this->userBrowser);
+            $this->authenticator->setInputFeedbackMessage("Welcome back with cookie");
         } catch (\Exception $e) {
-            $this->sessionDAL->setInputFeedbackMessage($e->getMessage());
+            $this->authenticator->setInputFeedbackMessage($e->getMessage());
         }
     }
 
@@ -63,21 +61,21 @@ class Login {
                     $cookieBrowser = $rememberMeCookie->getUserBrowser();
 
                     $this->loginView->setUserCookies($cookieName, $cookiePassword);
-                    $this->cookieDAL->saveUserCookie($cookieName, $cookiePassword, $cookieBrowser);
+                    $this->authenticator->saveUserCookie($cookieName, $cookiePassword, $cookieBrowser);
 
-                    $this->sessionDAL->setInputFeedbackMessage("Welcome and you will be remembered");
+                    $this->authenticator->setInputFeedbackMessage("Welcome and you will be remembered");
                 } else {
-                    $this->sessionDAL->setInputFeedbackMessage("Welcome");
+                    $this->authenticator->setInputFeedbackMessage("Welcome");
                 }
 
-                $this->sessionDAL->setUserSession($username);
-                $this->sessionDAL->setUserBrowser($this->userBrowser);
+                $this->authenticator->setUserSession($username);
+                $this->authenticator->setUserBrowser($this->userBrowser);
 
-                $this->userDAL->loginUser($credentials);
+                $this->authenticator->loginUser($credentials);
 
                 $this->loginView->reloadPage();
             } catch (\Exception $e) {
-                $this->sessionDAL->setInputFeedbackMessage($e->getMessage());
+                $this->authenticator->setInputFeedbackMessage($e->getMessage());
                 $this->loginView->reloadPage();
             }
         }
@@ -85,20 +83,15 @@ class Login {
 
     public function doLogout() {
         if ($this->loginView->userWantsToLogout()) {
-            if ($this->sessionDAL->isUserSessionActive()) {
-                $this->sessionDAL->unsetUserSession();
+            if ($this->authenticator->isUserSessionActive()) {
+                $this->authenticator->unsetUserSession();
             }
 
             if ($this->loginView->isUserCookieNameSet()) {
-                $cookieName = $this->loginView->getUserCookieName();
-                $cookiePassword = $this->loginView->getUserCookiePassword();
-
-                if ($this->cookieDAL->validCookie($cookieName, $cookiePassword, $this->userBrowser)) {
-                    $this->loginView->unsetUserCookies();
-                }
+                $this->loginView->unsetUserCookies();
             }
 
-            $this->sessionDAL->setInputFeedbackMessage("Bye bye!");
+            $this->authenticator->setInputFeedbackMessage("Bye bye!");
             $this->loginView->reloadPage();
         }
     }

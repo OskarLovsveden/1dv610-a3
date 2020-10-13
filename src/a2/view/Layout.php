@@ -23,7 +23,6 @@ class Layout {
       . $this->renderIsLoggedIn($isLoggedIn) .
       '<div class="container">';
 
-    // TODO fix string dependency
     if (isset($_GET[self::$registerPost])) {
       $renderHTML .= $this->renderLinkForRegister();
       $renderHTML .= $registerView->response();
@@ -44,7 +43,6 @@ class Layout {
   }
 
   private function renderLinkForLogin() {
-    // TODO fix string dependency
     return '<p><a href="?' . self::$registerPost . '">Register a new user</a></p>';
   }
 

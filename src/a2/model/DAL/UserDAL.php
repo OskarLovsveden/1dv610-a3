@@ -14,21 +14,7 @@ class UserDAL {
         $this->createTableIfNotExists();
     }
 
-    public function createTableIfNotExists() {
-        $connection = $this->database->getConnection();
-
-        $sql = "CREATE TABLE IF NOT EXISTS " . self::$table . " (
-            " . self::$rowUsername . " VARCHAR(30) NOT NULL UNIQUE,
-            " . self::$rowPassword . " VARCHAR(60) NOT NULL
-            )";
-
-        $connection->query($sql);
-        $connection->close();
-    }
-
     public function registerUser(\Model\User $user) {
-        $this->createTableIfNotExists();
-
         $username = $user->getUsername();
         $password = password_hash($user->getPassword(), PASSWORD_BCRYPT);
 
@@ -80,5 +66,17 @@ class UserDAL {
         }
 
         return $userExists == 1;
+    }
+
+    private function createTableIfNotExists() {
+        $connection = $this->database->getConnection();
+
+        $sql = "CREATE TABLE IF NOT EXISTS " . self::$table . " (
+            " . self::$rowUsername . " VARCHAR(30) NOT NULL UNIQUE,
+            " . self::$rowPassword . " VARCHAR(60) NOT NULL
+            )";
+
+        $connection->query($sql);
+        $connection->close();
     }
 }

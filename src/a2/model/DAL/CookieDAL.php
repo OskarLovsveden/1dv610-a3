@@ -16,20 +16,8 @@ class CookieDAL {
         $this->createTableIfNotExists();
     }
 
-    private function createTableIfNotExists() {
-        $connection = $this->database->getConnection();
 
-        $sql = "CREATE TABLE IF NOT EXISTS " . self::$table . " (
-            " . self::$rowUsername . " VARCHAR(30) NOT NULL UNIQUE,
-            " . self::$rowPassword . " VARCHAR(60) NOT NULL,
-            " . self::$rowBrowser . " LONGTEXT NOT NULL
-            )";
-
-        $connection->query($sql);
-        $connection->close();
-    }
-
-    public function saveUserCookie($cookieName, $cookiePassword, $userBrowser) {
+    public function saveUserCookie(string $cookieName, string $cookiePassword, string $userBrowser) {
         $this->createTableIfNotExists();
 
         $connection = $this->database->getConnection();
@@ -40,7 +28,7 @@ class CookieDAL {
         $connection->close();
     }
 
-    public function getUserCookie($username) {
+    public function getUserCookie(string $username) {
 
         $connection = $this->database->getConnection();
 
@@ -56,7 +44,7 @@ class CookieDAL {
         return $row;
     }
 
-    public function validCookie($cookieName, $cookiePassword, $userBrowser): bool {
+    public function validCookie(string $cookieName, string $cookiePassword, string $userBrowser): bool {
         $userCookie = $this->getUserCookie($cookieName);
 
         $validPassword = $userCookie[self::$rowPassword] === $cookiePassword;
@@ -67,5 +55,18 @@ class CookieDAL {
         }
 
         throw new \Exception("Wrong information in cookies");
+    }
+
+    private function createTableIfNotExists() {
+        $connection = $this->database->getConnection();
+
+        $sql = "CREATE TABLE IF NOT EXISTS " . self::$table . " (
+            " . self::$rowUsername . " VARCHAR(30) NOT NULL UNIQUE,
+            " . self::$rowPassword . " VARCHAR(60) NOT NULL,
+            " . self::$rowBrowser . " LONGTEXT NOT NULL
+            )";
+
+        $connection->query($sql);
+        $connection->close();
     }
 }

@@ -13,10 +13,10 @@ class Register {
 
 	private $registerFormErrors = array();
 
-	private $sessionDAL;
+	private $authenticator;
 
-	public function __construct(\Model\DAL\SessionDAL $sessionDAL) {
-		$this->sessionDAL = $sessionDAL;
+	public function __construct(\Authenticator $authenticator) {
+		$this->authenticator = $authenticator;
 	}
 
 	public function userWantsToRegister() {
@@ -45,7 +45,7 @@ class Register {
 		}
 
 		if (!empty($this->registerFormErrors)) {
-			$this->sessionDAL->setInputUserValue(strip_tags($username));
+			$this->authenticator->setInputUserValue(strip_tags($username));
 			$br_separated_errors = implode("<br>", $this->registerFormErrors);
 			throw new \Exception($br_separated_errors);
 		}
@@ -66,12 +66,12 @@ class Register {
 	 * @return  void BUT writes to standard output and cookies!
 	 */
 	public function response() {
-		$message = $this->sessionDAL->getInputFeedbackMessage();
+		$message = $this->authenticator->getInputFeedbackMessage();
 
 		$usernameInputValue = "";
 
-		if ($this->sessionDAL->isInputUserValueSet()) {
-			$usernameInputValue = $this->sessionDAL->getInputUserValue();
+		if ($this->authenticator->isInputUserValueSet()) {
+			$usernameInputValue = $this->authenticator->getInputUserValue();
 		}
 
 		$response = $this->generateRegisterFormHTML($message, $usernameInputValue);
@@ -109,7 +109,6 @@ class Register {
         </form>';
 	}
 
-	//CREATE GET-FUNCTIONS TO FETCH REQUEST VARIABLES
 	private function getRequestUserName() {
 		return $_POST[self::$name];
 	}

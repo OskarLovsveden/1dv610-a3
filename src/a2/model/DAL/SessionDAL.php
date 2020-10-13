@@ -10,7 +10,7 @@ class SessionDAL {
 
   private $sessionInputFeedbackMessageWasSetAndShouldNotBeRemovedDuringThisRequest = false;
 
-  public function setInputUserValue($username) {
+  public function setInputUserValue(string $username) {
     $_SESSION[self::$sessionInputUserValue] = $username;
   }
 
