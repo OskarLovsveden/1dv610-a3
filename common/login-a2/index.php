@@ -29,7 +29,7 @@ $cookieDAL = new \Model\DAL\CookieDAL($database);
 $userDAL = new \Model\DAL\UserDAL($database);
 
 // Create view objects
-$loginView = new \View\Login($cookieDAL, $sessionDAL);
+$loginView = new \View\Login($sessionDAL);
 $registerView = new \View\Register($sessionDAL);
 $dateTimeView = new \View\DateTime();
 $layoutView = new \View\Layout();
@@ -37,34 +37,13 @@ $layoutView = new \View\Layout();
 $loginController = new \Controller\Login($loginView, $cookieDAL, $sessionDAL, $userDAL);
 $registerController = new \Controller\Register($registerView, $userDAL, $sessionDAL);
 
-$cookieValid = false;
-// $cookieExists = false;
-// $validBrowser = false;
-$sessionExists = $sessionDAL->isUserSessionActive();
-
-try {
-    if ($loginView->isUserCookieNameSet()) {
-        $cookieName = $loginView->getUserCookieName();
-        $cookiePassword = $loginView->getUserCookiePassword();
-
-        $cookieValid = $cookieDAL->validCookie($cookieName, $cookiePassword);
-        // $cookieDAL->isUserCookieValid($cookieName, $cookiePassword);
-        // $cookieExists = $cookieDAL->isUserCookieActive($cookieName, $cookiePassword);
-        // $validBrowser = $cookieDAL->userBrowserValid($cookieName);
-    }
-} catch (\Exception $e) {
-    $sessionDAL->setInputFeedbackMessage($e->getMessage());
-}
-
-$userLoggedIn = $sessionExists || $cookieValid;
-// $userLoggedIn = $sessionExists || $cookieExists && $validBrowser;
+$userLoggedIn = $loginController->isUserLoggedIn();
 
 if ($userLoggedIn) {
-    var_dump("do logout");
     $loginController->doLogout();
 } else {
     // TODO fix string dependency
-    if (isset($_GET["register"])) {
+    if ($layoutView->wantsToRegister()) {
         $registerController->doRegister();
     } else {
         $loginController->doLogin();

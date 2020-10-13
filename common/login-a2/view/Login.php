@@ -17,11 +17,9 @@ class Login {
 	private static $cookieNameKey = 'LoginView::CookieName';
 	private static $cookiePasswordKey = 'LoginView::CookiePassword';
 
-	private $cookieDAL;
 	private $sessionDAL;
 
-	public function __construct(\Model\DAL\CookieDAL $cookieDAL, \Model\DAL\SessionDAL $sessionDAL) {
-		$this->cookieDAL = $cookieDAL;
+	public function __construct(\Model\DAL\SessionDAL $sessionDAL) {
 		$this->sessionDAL = $sessionDAL;
 	}
 
@@ -34,17 +32,6 @@ class Login {
 	 */
 	public function response(bool $isLoggedIn) {
 		$message = $this->sessionDAL->getInputFeedbackMessage();
-
-		$sessionExists = $this->sessionDAL->isUserSessionActive();
-		// $cookieExists = $this->cookieDAL->isUserCookieActive($this->getUserCookieName(), $this->getUserCookiePassword());
-
-		// if (!$sessionExists && $cookieExists) {
-		// 	$message = "Welcome back with cookie";
-		// }
-
-		if ($this->isUserCookieNameSet()) {
-			$message = "Welcome back with cookie";
-		}
 
 		$response = "";
 
@@ -94,16 +81,8 @@ class Login {
 	}
 
 	public function setUserCookies($cookieName, $cookiePassword) {
-		var_dump("kakan att sätta: ", $cookiePassword);
-
 		setcookie(self::$cookieNameKey, $cookieName, time() + (86400 * 30), "/");
 		setcookie(self::$cookiePasswordKey, $cookiePassword, time() + (86400 * 30), "/");
-
-		echo "SET COOKIE VIEW";
-		exit;
-
-		// $this->cookieUsername = $cookieUsername;
-		// $this->cookiePassword = $cookiePassword;
 	}
 
 	public function unsetUserCookies() {

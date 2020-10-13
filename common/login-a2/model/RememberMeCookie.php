@@ -5,15 +5,16 @@ namespace Model;
 class RememberMeCookie {
     private $cookieName;
     private $cookiePassword;
+    private $cookieBrowser;
 
-    public function __construct($cookieName) {
+    public function __construct($cookieName, $cookieBrowser) {
         $this->cookieName = $cookieName;
+        $this->cookiePassword = $this->generatePassword();
+        $this->cookieBrowser = $cookieBrowser;
+    }
 
-        $str = rand();
-        var_dump($str);
-        $cookiePassword = md5($str);
-        $this->cookiePassWord = $cookiePassword;
-        var_dump($this->cookiePassword);
+    private function generatePassword() {
+        return bin2hex(random_bytes(20));
     }
 
     public function getCookieName() {
@@ -22,5 +23,9 @@ class RememberMeCookie {
 
     public function getCookiePassword() {
         return $this->cookiePassword;
+    }
+
+    public function getUserBrowser() {
+        return $this->cookieBrowser;
     }
 }

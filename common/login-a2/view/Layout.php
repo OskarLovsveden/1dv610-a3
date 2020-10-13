@@ -4,6 +4,12 @@ namespace View;
 
 class Layout {
 
+  private static $registerPost = "register";
+
+  public function wantsToRegister() {
+    return isset($_GET[self::$registerPost]);
+  }
+
   public function render(bool $isLoggedIn, \View\Login $loginView, \View\Register $registerView, \View\DateTime $dateTimeView) {
     $renderHTML = '
     <!DOCTYPE html>
@@ -18,7 +24,7 @@ class Layout {
       '<div class="container">';
 
     // TODO fix string dependency
-    if (isset($_GET["register"])) {
+    if (isset($_GET[self::$registerPost])) {
       $renderHTML .= $this->renderLinkForRegister();
       $renderHTML .= $registerView->response();
     } else {
@@ -39,7 +45,7 @@ class Layout {
 
   private function renderLinkForLogin() {
     // TODO fix string dependency
-    return '<p><a href="?register">Register a new user</a></p>';
+    return '<p><a href="?' . self::$registerPost . '">Register a new user</a></p>';
   }
 
   private function renderLinkForRegister() {

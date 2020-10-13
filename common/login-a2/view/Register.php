@@ -64,7 +64,7 @@ class Register {
 	 * @return  void BUT writes to standard output and cookies!
 	 */
 	public function response() {
-		$message = $this->sessionDAL->getInputFeedbackMessage(); // Using variable
+		$message = $this->sessionDAL->getInputFeedbackMessage();
 
 		$usernameInputValue = "";
 

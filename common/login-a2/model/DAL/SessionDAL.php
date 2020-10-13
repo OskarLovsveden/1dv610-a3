@@ -7,7 +7,6 @@ class SessionDAL {
   private static $sessionInputUserValue = 'Model\\DAL\\SessionDAL::sessionInputUserValue';
   private static $activeUser = 'Model\\DAL\\SessionDAL::activeUser';
   private static $userBrowser = 'Model\\DAL\\SessionDAL::userBrowser';
-  private static $userAgent = 'HTTP_USER_AGENT';
 
   private $sessionInputFeedbackMessageWasSetAndShouldNotBeRemovedDuringThisRequest = false;
 
@@ -25,9 +24,7 @@ class SessionDAL {
 
   public function isUserSessionActive(): bool {
     if (isset($_SESSION[self::$activeUser]) && !empty($_SESSION[self::$activeUser])) {
-      if ($this->userBrowserValid()) {
-        return true;
-      }
+      return true;
     }
 
     return false;
@@ -72,12 +69,12 @@ class SessionDAL {
     return "";
   }
 
-  public function setUserBrowser() {
-    $_SESSION[self::$userBrowser] = $_SERVER[self::$userAgent];
+  public function setUserBrowser($userBrowser) {
+    $_SESSION[self::$userBrowser] = $userBrowser;
   }
 
-  public function userBrowserValid(): bool {
-    if ($_SESSION[self::$userBrowser] === $_SERVER[self::$userAgent]) {
+  public function userBrowserValid($userBrowser): bool {
+    if ($_SESSION[self::$userBrowser] === $userBrowser) {
       return true;
     }
     return false;

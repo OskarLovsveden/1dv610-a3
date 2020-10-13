@@ -6,17 +6,10 @@ class CookieDAL {
 
     private $database;
 
-    // private $cookieUsername;
-    // private $cookiePassword;
-
     private static $table = 'cookies';
     private static $rowUsername = 'cookieUsername';
     private static $rowPassword = 'cookiePassword';
     private static $rowBrowser = 'cookieBrowser';
-    private static $userAgent = 'HTTP_USER_AGENT';
-
-    // private static $cookieNameKey = 'LoginView::CookieName';
-    // private static $cookiePasswordKey = 'LoginView::CookiePassword';
 
     public function __construct(Database $database) {
         $this->database = $database;
@@ -36,14 +29,12 @@ class CookieDAL {
         $connection->close();
     }
 
-    public function saveUserCookie($cookieName, $cookiePassword) {
+    public function saveUserCookie($cookieName, $cookiePassword, $userBrowser) {
         $this->createTableIfNotExists();
-
-        $browser = $_SERVER[self::$userAgent];
 
         $connection = $this->database->getConnection();
 
-        $sql = "REPLACE INTO " . self::$table . " (" . self::$rowUsername . ", " . self::$rowPassword . ", " . self::$rowBrowser . ") VALUES ('" . $cookieName . "', '" . $cookiePassword . "', '" . $browser . "')";
+        $sql = "REPLACE INTO " . self::$table . " (" . self::$rowUsername . ", " . self::$rowPassword . ", " . self::$rowBrowser . ") VALUES ('" . $cookieName . "', '" . $cookiePassword . "', '" . $userBrowser . "')";
 
         $connection->query($sql);
         $connection->close();
@@ -65,73 +56,11 @@ class CookieDAL {
         return $row;
     }
 
-    // public function setUserCookies($cookieUsername) {
-    //     $str = rand();
-    //     $cookiePassword = md5($str);
-
-    //     setcookie(self::$cookieNameKey, $cookieUsername, time() + (86400 * 30), "/");
-    //     setcookie(self::$cookiePasswordKey, $cookiePassword, time() + (86400 * 30), "/");
-
-    //     $this->cookieUsername = $cookieUsername;
-    //     $this->cookiePassword = $cookiePassword;
-    // }
-
-    // public function unsetUserCookies() {
-    //     setcookie(self::$cookieNameKey, "", time() - 3600);
-    //     setcookie(self::$cookiePasswordKey, "", time() - 3600);
-    // }
-
-    // public function isUserCookieActive($cookieName, $cookiePassword) {
-    //     $userCookie = $this->getUserCookie($cookieName);
-    //     $validPassword = $userCookie[self::$rowPassword] === $cookiePassword;
-
-    //     // $userCookie = $this->getUserCookie($_COOKIE[self::$cookieNameKey]);
-    //     // $validPassword = $userCookie[self::$rowPassword] === $_COOKIE[self::$cookiePasswordKey];
-    //     // $cookieSet = isset($_COOKIE[self::$cookieNameKey]);
-
-    //     // if ($validPassword && $cookieSet) {
-    //     if ($validPassword) {
-    //         return true;
-    //     }
-
-    //     return false;
-    // }
-
-    // public function isUserCookieValid($cookieName, $cookiePassword) {
-    //     $userCookie = $this->getUserCookie($cookieName);
-
-    //     if ($userCookie) {
-    //         $validPassword = $userCookie[self::$rowPassword] === $cookiePassword;
-    //         // $userCookie = $this->getUserCookie($_COOKIE[self::$cookieNameKey]);
-
-    //         // $validPassword = $userCookie[self::$rowPassword] === $_COOKIE[self::$cookiePasswordKey];
-    //         // $cookieSet = isset($_COOKIE[self::$cookieNameKey]);
-
-    //         // if (!$validPassword && $cookieSet) {
-    //         if (!$validPassword) {
-    //             // $this->unsetUserCookies();
-    //             throw new \Exception("Wrong information in cookies");
-    //         }
-    //     }
-    // }
-
-    // public function userBrowserValid($cookieName) {
-    //     $userCookie = $this->getUserCookie($cookieName);
-    //     // $userCookie = $this->getUserCookie($_COOKIE[self::$cookieNameKey]);
-
-    //     $validBrowser = $userCookie[self::$rowBrowser] === $_SERVER[self::$userAgent];
-
-    //     if ($userCookie && $validBrowser) {
-    //         return true;
-    //     }
-    //     return false;
-    // }
-
-    public function validCookie($cookieName, $cookiePassword): bool {
+    public function validCookie($cookieName, $cookiePassword, $userBrowser): bool {
         $userCookie = $this->getUserCookie($cookieName);
 
         $validPassword = $userCookie[self::$rowPassword] === $cookiePassword;
-        $validBrowser = $userCookie[self::$rowBrowser] === $_SERVER[self::$userAgent];
+        $validBrowser = $userCookie[self::$rowBrowser] === $userBrowser;
 
         if ($userCookie && $validBrowser && $validPassword) {
             return true;
