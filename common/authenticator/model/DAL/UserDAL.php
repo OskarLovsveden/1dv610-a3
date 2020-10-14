@@ -34,6 +34,7 @@ class UserDAL {
         $username = $credentials->getUsername();
         $password = $credentials->getPassword();
 
+
         $connection = $this->database->getConnection();
 
         if ($this->userExists($username)) {

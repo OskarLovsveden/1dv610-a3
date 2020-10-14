@@ -19,6 +19,8 @@ class Login {
                 $credentials = $this->loginView->getLoginCredentials();
                 $username = $credentials->getUsername();
 
+                $this->authenticator->loginUser($credentials);
+
                 if ($credentials->getKeepUserLoggedIn()) {
                     $userBrowser = $this->loginView->getUserBrowser();
                     $rememberMeCookie = new \Model\RememberMeCookie($username, $userBrowser);
@@ -38,8 +40,6 @@ class Login {
 
                 $userBrowser = $this->loginView->getUserBrowser();
                 $this->authenticator->setUserBrowser($userBrowser);
-
-                $this->authenticator->loginUser($credentials);
 
                 $this->loginView->reloadPage();
             } catch (\Exception $e) {
