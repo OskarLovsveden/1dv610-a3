@@ -2,48 +2,13 @@
 
 namespace Controller;
 
-require_once('model/DAL/UserDAL.php');
-require_once('model/RememberMeCookie.php');
-
 class Login {
     private $loginView;
     private $authenticator;
-    private $userBrowser;
 
     public function __construct(\View\Login $loginView, \Authenticator $authenticator) {
         $this->loginView = $loginView;
         $this->authenticator = $authenticator;
-        $this->userBrowser = $_SERVER['HTTP_USER_AGENT'];
-    }
-
-    public function isUserLoggedIn(): bool {
-        if ($this->authenticator->isUserSessionActive()) {
-            return true;
-        }
-        if ($this->checkIfCookieExists()) {
-            $this->tryToLoginWithCookie();
-
-            $cookieUsername = $this->loginView->getUserCookieName();
-            $this->authenticator->setUserSession($cookieUsername);
-            $this->loginView->reloadPage();
-        }
-        return false;
-    }
-
-    public function checkIfCookieExists() {
-        return $this->loginView->isUserCookieNameSet() && $this->loginView->isUserCookiePasswordSet();
-    }
-
-    public function tryToLoginWithCookie() {
-        $cookieName = $this->loginView->getUserCookieName();
-        $cookiePassword = $this->loginView->getUserCookiePassword();
-
-        try {
-            $this->authenticator->validCookie($cookieName, $cookiePassword, $this->userBrowser);
-            $this->authenticator->setInputFeedbackMessage("Welcome back with cookie");
-        } catch (\Exception $e) {
-            $this->authenticator->setInputFeedbackMessage($e->getMessage());
-        }
     }
 
     public function doLogin() {
@@ -55,7 +20,8 @@ class Login {
                 $username = $credentials->getUsername();
 
                 if ($credentials->getKeepUserLoggedIn()) {
-                    $rememberMeCookie = new \Model\RememberMeCookie($username, $this->userBrowser);
+                    $userBrowser = $this->loginView->getUserBrowser();
+                    $rememberMeCookie = new \Model\RememberMeCookie($username, $userBrowser);
                     $cookieName = $rememberMeCookie->getCookieName();
                     $cookiePassword = $rememberMeCookie->getCookiePassword();
                     $cookieBrowser = $rememberMeCookie->getUserBrowser();
@@ -69,7 +35,9 @@ class Login {
                 }
 
                 $this->authenticator->setUserSession($username);
-                $this->authenticator->setUserBrowser($this->userBrowser);
+
+                $userBrowser = $this->loginView->getUserBrowser();
+                $this->authenticator->setUserBrowser($userBrowser);
 
                 $this->authenticator->loginUser($credentials);
 
@@ -93,6 +61,37 @@ class Login {
 
             $this->authenticator->setInputFeedbackMessage("Bye bye!");
             $this->loginView->reloadPage();
+        }
+    }
+
+    public function isUserLoggedIn(): bool {
+        if ($this->authenticator->isUserSessionActive()) {
+            return true;
+        }
+        if ($this->checkIfCookieExists()) {
+            $this->tryToLoginWithCookie();
+
+            $cookieUsername = $this->loginView->getUserCookieName();
+            $this->authenticator->setUserSession($cookieUsername);
+            $this->loginView->reloadPage();
+        }
+        return false;
+    }
+
+    private function checkIfCookieExists() {
+        return $this->loginView->isUserCookieNameSet() && $this->loginView->isUserCookiePasswordSet();
+    }
+
+    private function tryToLoginWithCookie() {
+        $cookieName = $this->loginView->getUserCookieName();
+        $cookiePassword = $this->loginView->getUserCookiePassword();
+
+        try {
+            $userBrowser = $this->loginView->getUserBrowser();
+            $this->authenticator->validCookie($cookieName, $cookiePassword, $userBrowser);
+            $this->authenticator->setInputFeedbackMessage("Welcome back with cookie");
+        } catch (\Exception $e) {
+            $this->authenticator->setInputFeedbackMessage($e->getMessage());
         }
     }
 }

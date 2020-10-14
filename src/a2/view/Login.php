@@ -2,10 +2,6 @@
 
 namespace View;
 
-require_once('model/Username.php');
-require_once('model/Password.php');
-require_once('model/Credentials.php');
-
 class Login {
 
 	private static $login = 'LoginView::Login';
@@ -16,6 +12,7 @@ class Login {
 	private static $messageId = 'LoginView::Message';
 	private static $cookieNameKey = 'LoginView::CookieName';
 	private static $cookiePasswordKey = 'LoginView::CookiePassword';
+	private static $httpAgent = 'HTTP_USER_AGENT';
 
 	private $authenticator;
 
@@ -104,6 +101,10 @@ class Login {
 
 	public function getUserCookiePassword() {
 		return $_COOKIE[self::$cookiePasswordKey];
+	}
+
+	public function getUserBrowser() {
+		return $_SERVER[self::$httpAgent];
 	}
 
 	/**

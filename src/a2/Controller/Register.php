@@ -23,7 +23,7 @@ class Register {
             } catch (\Exception $e) {
                 $this->authenticator->setInputFeedbackMessage($e->getMessage());
                 $registerURL = $this->registerView->getRegisterURL();
-                header("Location: /" . $registerURL . "");
+                header("Location: /a2/" . $registerURL . "");
             }
         }
     }
