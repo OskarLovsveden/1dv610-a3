@@ -2,8 +2,8 @@
 
 namespace Controller;
 
-require_once('controller/Login.php');
-require_once('controller/Register.php');
+require_once('Controller/Login.php');
+require_once('Controller/Register.php');
 
 require_once('view/Login.php');
 require_once('view/Register.php');
@@ -11,7 +11,6 @@ require_once('view/DateTime.php');
 require_once('view/Layout.php');
 
 class Application {
-    private $authenticator;
     private $loginView;
     private $registerView;
     private $dateTimeView;
@@ -21,7 +20,6 @@ class Application {
     private $userLoggedIn;
 
     public function __construct(\Authenticator $authenticator) {
-        $this->authenticator = $authenticator;
         $this->loginView = new \View\Login($authenticator);
         $this->registerView = new \View\Register($authenticator);
         $this->dateTimeView = new \View\DateTime();

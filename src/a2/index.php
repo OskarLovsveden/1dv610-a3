@@ -9,7 +9,7 @@ require_once('../common/authenticator/model/Credentials.php');
 require_once('../common/authenticator/model/RememberMeCookie.php');
 
 // App
-require_once('controller/Application.php');
+require_once('Controller/Application.php');
 
 $authenticator = new Authenticator();
 
