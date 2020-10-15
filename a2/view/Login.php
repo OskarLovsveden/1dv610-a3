@@ -73,7 +73,7 @@ class Login {
 		return isset($_POST[self::$logout]);
 	}
 
-	public function reloadPage() {
+	public function redirectIndex() {
 		header("Location: /a2");
 	}
 
