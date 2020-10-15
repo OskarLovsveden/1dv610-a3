@@ -6,7 +6,7 @@ class Layout {
 
   private static $registerPost = "register";
 
-  public function wantsToRegister() {
+  public function navigatedToRegisterPage() {
     return isset($_GET[self::$registerPost]);
   }
 
