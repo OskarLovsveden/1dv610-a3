@@ -41,10 +41,10 @@ class Login {
                 $userBrowser = $this->loginView->getUserBrowser();
                 $this->authenticator->setUserBrowser($userBrowser);
 
-                $this->loginView->reloadPage();
+                $this->loginView->redirectIndex();
             } catch (\Exception $e) {
                 $this->authenticator->setInputFeedbackMessage($e->getMessage());
-                $this->loginView->reloadPage();
+                $this->loginView->redirectIndex();
             }
         }
     }
@@ -60,7 +60,7 @@ class Login {
             }
 
             $this->authenticator->setInputFeedbackMessage("Bye bye!");
-            $this->loginView->reloadPage();
+            $this->loginView->redirectIndex();
         }
     }
 
@@ -73,7 +73,7 @@ class Login {
 
             $cookieUsername = $this->loginView->getUserCookieName();
             $this->authenticator->setUserSession($cookieUsername);
-            $this->loginView->reloadPage();
+            $this->loginView->redirectIndex();
         }
         return false;
     }
