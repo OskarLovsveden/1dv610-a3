@@ -8,6 +8,8 @@ require_once('model/DAL/UserDAL.php');
 require_once('model/Username.php');
 require_once('model/Password.php');
 require_once('model/User.php');
+require_once('model/Credentials.php');
+require_once('model/RememberMeCookie.php');
 
 class Authenticator {
     private $database;
@@ -66,8 +68,10 @@ class Authenticator {
         return $this->sessionDAL->userBrowserValid($userBrowser);
     }
 
-    public function saveUserCookie(string $cookieName, string $cookiePassword, string $userBrowser) {
-        return $this->cookieDAL->saveUserCookie($cookieName, $cookiePassword, $userBrowser);
+    public function saveUserCookieAndReturnPassword(string $username, string $userBrowser) {
+        $rememberMeCookie = new \Model\RememberMeCookie($username, $userBrowser);
+        $this->cookieDAL->saveUserCookie($rememberMeCookie);
+        return $rememberMeCookie->getCookiePassword();
     }
 
     public function getUserCookie(string $username) {
@@ -78,11 +82,19 @@ class Authenticator {
         return $this->cookieDAL->validCookie($cookieName, $cookiePassword, $userBrowser);
     }
 
-    public function registerUser(\Model\User $user) {
+    public function registerUser(string $username, string $password) {
+        $name = new \Model\Username($username);
+        $pass = new \Model\Password($password);
+
+        $user = new \Model\User($name, $pass);
         return $this->userDAL->registerUser($user);
     }
 
-    public function loginUser(\Model\Credentials $credentials) {
+    public function loginUser(string $username, string $password, bool $keepUserLoggedIn) {
+        $name = new \Model\Username($username);
+        $pass = new \Model\Password($password);
+
+        $credentials = new \Model\Credentials($name, $pass, $keepUserLoggedIn);
         return $this->userDAL->loginUser($credentials);
     }
 }

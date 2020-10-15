@@ -60,15 +60,6 @@ class Login {
 		}
 	}
 
-	public function getLoginCredentials(): \Model\Credentials {
-		$username = new \Model\Username($this->getRequestUserName());
-		$password = new \Model\Password($this->getRequestPassword());
-		$keepMeLoggedIn = $this->getRequestKeepMeLoggedIn();
-
-		$credentials = new \Model\Credentials($username, $password, $keepMeLoggedIn);
-		return $credentials;
-	}
-
 	public function userWantsToLogout(): bool {
 		return isset($_POST[self::$logout]);
 	}
@@ -105,6 +96,18 @@ class Login {
 
 	public function getUserBrowser() {
 		return $_SERVER[self::$httpAgent];
+	}
+
+	public function getRequestUserName() {
+		return $_POST[self::$name];
+	}
+
+	public function getRequestPassword() {
+		return $_POST[self::$password];
+	}
+
+	public function getRequestKeepMeLoggedIn() {
+		return isset($_POST[self::$keep]);
 	}
 
 	/**
@@ -146,17 +149,5 @@ class Login {
 		</fieldset>
 		</form>
 		';
-	}
-
-	private function getRequestUserName() {
-		return $_POST[self::$name];
-	}
-
-	private function getRequestPassword() {
-		return $_POST[self::$password];
-	}
-
-	private function getRequestKeepMeLoggedIn() {
-		return isset($_POST[self::$keep]);
 	}
 }

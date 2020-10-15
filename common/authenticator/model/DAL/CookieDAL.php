@@ -17,7 +17,11 @@ class CookieDAL {
     }
 
 
-    public function saveUserCookie(string $cookieName, string $cookiePassword, string $userBrowser) {
+    public function saveUserCookie(\Model\RememberMeCookie $rememberMeCookie) {
+        $cookieName = $rememberMeCookie->getCookieName();
+        $cookiePassword = $rememberMeCookie->getCookiePassword();
+        $userBrowser = $rememberMeCookie->getUserBrowser();
+
         $this->createTableIfNotExists();
 
         $connection = $this->database->getConnection();

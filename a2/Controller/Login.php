@@ -16,20 +16,18 @@ class Login {
         if ($this->loginView->userWantsToLogin()) {
             try {
                 $this->loginView->validateLoginForm();
-                $credentials = $this->loginView->getLoginCredentials();
-                $username = $credentials->getUsername();
+                $username = $this->loginView->getRequestUserName();
+                $password = $this->loginView->getRequestPassword();
+                $keepUserLoggedIn = $this->loginView->getRequestKeepMeLoggedIn();
 
-                $this->authenticator->loginUser($credentials);
+                $this->authenticator->loginUser($username, $password, $keepUserLoggedIn);
 
-                if ($credentials->getKeepUserLoggedIn()) {
+                if ($keepUserLoggedIn) {
                     $userBrowser = $this->loginView->getUserBrowser();
-                    $rememberMeCookie = new \Model\RememberMeCookie($username, $userBrowser);
-                    $cookieName = $rememberMeCookie->getCookieName();
-                    $cookiePassword = $rememberMeCookie->getCookiePassword();
-                    $cookieBrowser = $rememberMeCookie->getUserBrowser();
 
-                    $this->loginView->setUserCookies($cookieName, $cookiePassword);
-                    $this->authenticator->saveUserCookie($cookieName, $cookiePassword, $cookieBrowser);
+                    $cookiePassword = $this->authenticator->saveUserCookieAndReturnPassword($username, $userBrowser);
+
+                    $this->loginView->setUserCookies($username, $cookiePassword);
 
                     $this->authenticator->setInputFeedbackMessage("Welcome and you will be remembered");
                 } else {

@@ -51,13 +51,6 @@ class Register {
 		}
 	}
 
-	public function getUserToRegister() {
-		$username = new \Model\Username($this->getRequestUserName());
-		$password = new \Model\Password($this->getRequestPassword());
-
-		return new \Model\User($username, $password);
-	}
-
 	/**
 	 * Create HTTP response
 	 *
@@ -84,6 +77,13 @@ class Register {
 
 	public function redirectRegister() {
 		header("Location: /a2/" . self::$registerURL . "");
+	}
+
+	public function getRequestUserName() {
+		return $_POST[self::$name];
+	}
+	public function getRequestPassword() {
+		return $_POST[self::$password];
 	}
 
 	/**
@@ -113,12 +113,6 @@ class Register {
         </form>';
 	}
 
-	private function getRequestUserName() {
-		return $_POST[self::$name];
-	}
-	private function getRequestPassword() {
-		return $_POST[self::$password];
-	}
 	private function getRequestPasswordRepeat() {
 		return $_POST[self::$passwordRepeat];
 	}

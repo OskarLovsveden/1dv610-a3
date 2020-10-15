@@ -15,9 +15,12 @@ class Register {
         if ($this->registerView->userWantsToRegister()) {
             try {
                 $this->registerView->registerFormValidAndSetMessage();
-                $user = $this->registerView->getUserToRegister();
-                $this->authenticator->setInputUserValue($user->getUsername());
-                $this->authenticator->registerUser($user);
+
+                $username = $this->registerView->getRequestUserName();
+                $password = $this->registerView->getRequestPassword();
+
+                $this->authenticator->setInputUserValue($username);
+                $this->authenticator->registerUser($username, $password);
                 $this->authenticator->setInputFeedbackMessage("Registered new user.");
                 $this->registerView->redirectIndex();
             } catch (\Exception $e) {
