@@ -19,11 +19,10 @@ class Register {
                 $this->authenticator->setInputUserValue($user->getUsername());
                 $this->authenticator->registerUser($user);
                 $this->authenticator->setInputFeedbackMessage("Registered new user.");
-                header("Location: /a2");
+                $this->registerView->redirectIndex();
             } catch (\Exception $e) {
                 $this->authenticator->setInputFeedbackMessage($e->getMessage());
-                $registerURL = $this->registerView->getRegisterURL();
-                header("Location: /a2/" . $registerURL . "");
+                $this->registerView->redirectRegister();
             }
         }
     }
