@@ -3,37 +3,22 @@
 session_start();
 
 require_once("model/RandomNumber.php");
+require_once("view/Game.php");
 
-$minNumber = 1;
-$maxNumber = 100;
 $randValueSessionIndex = "randNumVal";
-$userGuess = "userGuess";
-$postGuess = "postGuess";
-$legendTitle = "Guess a number between " . $minNumber . "-" . $maxNumber . "";
-$message = "";
 
-$rn = new \Model\RandomNumber($minNumber, $maxNumber);
+$rn = new \Model\RandomNumber(1, 100);
 
 if (!isset($_SESSION[$randValueSessionIndex])) {
-    $_SESSION[$randValueSessionIndex] = $rn->getValue();
+    $_SESSION[$randValueSessionIndex] = $rn->getValueToGuess();
 }
 
-echo '
-    <form method="post"> 
-    <fieldset>
-    <legend>' . $legendTitle . '</legend>
-    <p>' . $message . '</p>
-    
-    <label for="' . $userGuess . '">Username :</label>
-    <input type="text" id="' . $userGuess . '" name="' . $userGuess . '"/>
-    
-    <input type="submit" name="' . $postGuess . '" value="Login" />
-    </fieldset>
-    </form>
-    ';
+$game = new \View\Game($rn);
+$gameHTML = $game->getHTML();
+echo $gameHTML;
 
-if (isset($_POST[$postGuess])) {
-    $guess = $_POST[$userGuess];
+if ($game->userWantsToGuess()) {
+    $guess = $game->getUserGuess();
     $randNumVal = $_SESSION[$randValueSessionIndex];
 
     echo "You guessed: " . $guess . "<br/>";
