@@ -34,7 +34,7 @@ class Application {
         if ($this->userLoggedIn) {
             $this->loginController->doLogout();
         } else {
-            if ($this->layoutView->wantsToRegister()) {
+            if ($this->layoutView->navigatedToRegisterPage()) {
                 $this->registerController->doRegister();
             } else {
                 $this->loginController->doLogin();
