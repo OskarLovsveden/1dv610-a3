@@ -46,8 +46,8 @@ class Register {
 
 		if (!empty($this->registerFormErrors)) {
 			$this->authenticator->setInputUserValue(strip_tags($username));
-			$br_separated_errors = implode("<br>", $this->registerFormErrors);
-			throw new \Exception($br_separated_errors);
+			$brSeparatedErrors = implode("<br>", $this->registerFormErrors);
+			throw new \Exception($brSeparatedErrors);
 		}
 	}
 
@@ -78,8 +78,12 @@ class Register {
 		return $response;
 	}
 
-	public function getRegisterURL() {
-		return self::$registerURL;
+	public function redirectIndex() {
+		header("Location: /a2");
+	}
+
+	public function redirectRegister() {
+		header("Location: /a2/" . self::$registerURL . "");
 	}
 
 	/**
