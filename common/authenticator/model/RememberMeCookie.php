@@ -9,9 +9,15 @@ class RememberMeCookie {
 
     private static $httpAgent = 'HTTP_USER_AGENT';
 
-    public function __construct($cookieName) {
+    public function __construct(string $cookieName, string $cookiePassword = null) {
         $this->cookieName = $cookieName;
-        $this->cookiePassword = $this->generatePassword();
+
+        if ($cookiePassword == null) {
+            $this->cookiePassword = $this->generatePassword();
+        } else {
+            $this->cookiePassword = $cookiePassword;
+        }
+
         $this->cookieBrowser = $_SERVER[self::$httpAgent];
     }
 

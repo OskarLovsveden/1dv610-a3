@@ -13,6 +13,8 @@ require_once('view/DateTime.php');
 require_once('view/Layout.php');
 
 class LoginApp {
+    private $authenticator;
+
     private $loginView;
     private $registerView;
     private $dateTimeView;
@@ -22,24 +24,24 @@ class LoginApp {
     private $registerController;
 
     private $flashMessage;
-    private $userLoggedIn;
 
     public function __construct(\Authenticator $authenticator) {
-
-        $this->loginView = new \View\Login($authenticator);
-        $this->registerView = new \View\Register($authenticator);
-        $this->dateTimeView = new \View\DateTime();
-        $this->layoutView = new \View\Layout();
+        $this->authenticator = $authenticator;
         $this->flashMessage = new \FlashMessage();
 
-        $this->loginController = new \Controller\Login($authenticator, $this->loginView, $this->flashMessage);
+        $this->loginView = new \View\Login($this->flashMessage);
+        $this->registerView = new \View\Register($this->flashMessage);
+        $this->dateTimeView = new \View\DateTime();
+        $this->layoutView = new \View\Layout();
+
+        $this->loginController = new \Controller\Login($this->loginView, $authenticator, $this->flashMessage);
         $this->registerController = new \Controller\Register($this->registerView, $authenticator, $this->flashMessage);
     }
 
     public function run() {
-        $this->userLoggedIn = $this->loginController->isUserLoggedIn();
+        $userLoggedIn = $this->authenticator->isUserLoggedIn();
 
-        if ($this->userLoggedIn) {
+        if ($userLoggedIn) {
             $this->loginController->doLogout();
         } else {
             if ($this->layoutView->navigatedToRegisterPage()) {
@@ -49,6 +51,6 @@ class LoginApp {
             }
         }
 
-        $this->layoutView->render($this->userLoggedIn, $this->loginView, $this->registerView, $this->dateTimeView);
+        $this->layoutView->render($userLoggedIn, $this->loginView, $this->registerView, $this->dateTimeView);
     }
 }

@@ -15,7 +15,7 @@ class UserDAL {
     }
 
     public function register(\Model\User $user) {
-        $username = $user->getUsername();
+        $username = $user->getUsername()->getUsername();
         $password = password_hash($user->getPassword(), PASSWORD_BCRYPT);
 
         $connection = $this->database->getConnection();
@@ -31,8 +31,8 @@ class UserDAL {
     }
 
     public function login(\Model\User $user) {
-        $username = $user->getUsername();
-        $password = $user->getPassword();
+        $username = $user->getUsername()->getUsername();
+        $password = $user->getPassword()->getPassword();
 
 
         $connection = $this->database->getConnection();

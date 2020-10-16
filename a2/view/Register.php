@@ -10,13 +10,16 @@ class Register {
 	private static $messageId = 'RegisterView::Message';
 
 	private static $registerURL = "?register";
+	private static $usernameInputIndex = __CLASS__ . '::usernameInputIndex';
 
 	private $registerFormErrors = array();
 
-	private $authenticator;
+	private $flashMessage;
+	private $usernameInputSession;
 
-	public function __construct(\Authenticator $authenticator) {
-		$this->authenticator = $authenticator;
+	public function __construct(\FlashMessage $flashMessage) {
+		$this->flashMessage = $flashMessage;
+		$this->usernameInputSession = new \SessionStorage(self::$usernameInputIndex);
 	}
 
 	public function userWantsToRegister() {
@@ -45,7 +48,7 @@ class Register {
 		}
 
 		if (!empty($this->registerFormErrors)) {
-			$this->authenticator->setInputUserValue(strip_tags($username));
+			$this->usernameInputSession->store(strip_tags($username));
 			$brSeparatedErrors = implode("<br>", $this->registerFormErrors);
 			throw new \Exception($brSeparatedErrors);
 		}
@@ -59,12 +62,12 @@ class Register {
 	 * @return  void BUT writes to standard output and cookies!
 	 */
 	public function response() {
-		$message = $this->authenticator->getInputFeedbackMessage();
+		$message = $this->flashMessage->get();
 
 		$usernameInputValue = "";
 
-		if ($this->authenticator->isInputUserValueSet()) {
-			$usernameInputValue = $this->authenticator->getInputUserValue();
+		if ($this->usernameInputSession->hasValue()) {
+			$usernameInputValue = $this->usernameInputSession->getValue();
 		}
 
 		$response = $this->generateRegisterFormHTML($message, $usernameInputValue);

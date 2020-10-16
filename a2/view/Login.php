@@ -13,14 +13,16 @@ class Login {
 	private static $cookieNameKey = 'LoginView::CookieName';
 	private static $cookiePasswordKey = 'LoginView::CookiePassword';
 
-	private static $sessionInputUserValue = __CLASS__ . '::sessionInputUserValue';
-	private static $activeUser = __CLASS__ . '::activeUser';
-	private static $userBrowser = __CLASS__ . '::userBrowser';
+	private static $usernameInputIndex = __CLASS__ . '::usernameInputIndex';
+	// private static $activeUser = __CLASS__ . '::activeUser';
+	// private static $userBrowser = __CLASS__ . '::userBrowser';
 
-	private $authenticator;
+	private $flashMessage;
+	private $usernameInputSession;
 
-	public function __construct(\Authenticator $authenticator) {
-		$this->authenticator = $authenticator;
+	public function __construct(\FlashMessage $flashMessage) {
+		$this->flashMessage = $flashMessage;
+		$this->usernameInputSession = new \SessionStorage(self::$usernameInputIndex);
 	}
 
 	public function userWantsToLogin(): bool {
@@ -29,12 +31,13 @@ class Login {
 
 	public function validateLoginForm() {
 		$username = $this->getRequestUserName();
-		$this->authenticator->setSessionIndexValue(self::$sessionInputUserValue, $username);
-		// $this->authenticator->setInputUserValue($this->getRequestUserName());
+		$password = $this->getRequestPassword();
 
-		if (!$this->getRequestUserName()) {
+		$this->usernameInputSession->store($username);
+
+		if (!$username) {
 			throw new \Exception("Username is missing");
-		} else if (!$this->getRequestPassword()) {
+		} else if (!$password) {
 			throw new \Exception("Password is missing");
 		}
 	}
@@ -93,8 +96,7 @@ class Login {
 	 * @return  void BUT writes to standard output and cookies!
 	 */
 	public function response(bool $isLoggedIn) {
-		$message = $this->flashMessage->getFlashMessage();
-		// $message = $this->authenticator->getInputFeedbackMessage();
+		$message = $this->flashMessage->get();
 
 		$response = "";
 
@@ -103,10 +105,8 @@ class Login {
 		} else {
 			$usernameInputValue = "";
 
-			if ($this->authenticator->isSessionIndexValueSet(self::$sessionInputUserValue)) {
-				// if ($this->authenticator->isInputUserValueSet()) {
-				$usernameInputValue = $this->authenticator->getSessionIndexValue(self::$sessionInputUserValue);
-				// $usernameInputValue = $this->authenticator->getInputUserValue();
+			if ($this->usernameInputSession->hasValue()) {
+				$usernameInputValue = $this->usernameInputSession->getValue();
 			}
 
 			$response .= $this->generateLoginFormHTML($message, $usernameInputValue);
