@@ -14,13 +14,13 @@ class UserDAL {
         $this->createTableIfNotExists();
     }
 
-    public function registerUser(\Model\User $user) {
+    public function register(\Model\User $user) {
         $username = $user->getUsername();
         $password = password_hash($user->getPassword(), PASSWORD_BCRYPT);
 
         $connection = $this->database->getConnection();
 
-        if ($this->userExists($username)) {
+        if ($this->exists($username)) {
             throw new \Exception("User exists, pick another username.");
         }
 
@@ -30,14 +30,14 @@ class UserDAL {
         $connection->close();
     }
 
-    public function loginUser(\Model\Credentials $credentials) {
-        $username = $credentials->getUsername();
-        $password = $credentials->getPassword();
+    public function login(\Model\User $user) {
+        $username = $user->getUsername();
+        $password = $user->getPassword();
 
 
         $connection = $this->database->getConnection();
 
-        if ($this->userExists($username)) {
+        if ($this->exists($username)) {
             $sql = "SELECT " . self::$rowPassword . " FROM " . self::$table . " WHERE " . self::$rowUsername . " LIKE BINARY '" . $username . "'";
 
             $stmt = $connection->query($sql);
@@ -53,7 +53,7 @@ class UserDAL {
         $connection->close();
     }
 
-    private function userExists(string $username): bool {
+    private function exists(string $username): bool {
         $connection = $this->database->getConnection();
 
         $query = "SELECT * FROM " . self::$table . " WHERE " . self::$rowUsername . " LIKE BINARY '" . $username . "'";

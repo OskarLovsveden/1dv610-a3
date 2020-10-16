@@ -7,25 +7,27 @@ class RememberMeCookie {
     private $cookiePassword;
     private $cookieBrowser;
 
-    public function __construct($cookieName, $cookieBrowser) {
+    private static $httpAgent = 'HTTP_USER_AGENT';
+
+    public function __construct($cookieName) {
         $this->cookieName = $cookieName;
         $this->cookiePassword = $this->generatePassword();
-        $this->cookieBrowser = $cookieBrowser;
+        $this->cookieBrowser = $_SERVER[self::$httpAgent];
     }
 
     private function generatePassword() {
         return bin2hex(random_bytes(20));
     }
 
-    public function getCookieName() {
+    public function getName() {
         return $this->cookieName;
     }
 
-    public function getCookiePassword() {
+    public function getPassword() {
         return $this->cookiePassword;
     }
 
-    public function getUserBrowser() {
+    public function getBrowser() {
         return $this->cookieBrowser;
     }
 }

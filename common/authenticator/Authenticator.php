@@ -1,77 +1,60 @@
 <?php
 
+require_once('../common/session-storage/SessionStorage.php');
+
 require_once('model/DAL/Database.php');
 require_once('model/DAL/CookieDAL.php');
-require_once('model/DAL/SessionDAL.php');
 require_once('model/DAL/UserDAL.php');
 
 require_once('model/Username.php');
 require_once('model/Password.php');
 require_once('model/User.php');
-require_once('model/Credentials.php');
 require_once('model/RememberMeCookie.php');
 
 class Authenticator {
+    private static $authenticatorSessionIndex = __CLASS__ . '::authenticatorSessionIndex';
+
     private $database;
     private $sessionDAL;
     private $cookieDAL;
     private $userDAL;
 
+    private $rememberMeCookie;
+
     public function __construct() {
         $this->database = new \Model\DAL\Database();
-        $this->sessionDAL = new \Model\DAL\SessionDAL();
+        $this->authSession = new \SessionStorage(self::$authenticatorSessionIndex);
         $this->cookieDAL = new \Model\DAL\CookieDAL($this->database);
         $this->userDAL = new \Model\DAL\UserDAL($this->database);
     }
 
-    public function setInputUserValue(string $username) {
-        return $this->sessionDAL->setInputUserValue($username);
+    public function setSessionIndexValue(string $index, string $data) {
+        $this->sessionDAL->setSessionIndexValue($index, $data);
     }
 
-    public function getInputUserValue() {
-        return $this->sessionDAL->getInputUserValue();
+    public function getSessionIndexValue(string $index): string {
+        return $this->sessionDAL->getSessionIndexValue($index);
     }
 
-    public function isInputUserValueSet(): bool {
-        return $this->sessionDAL->isInputUserValueSet();
+    public function unsetSessionIndexValue(string $index) {
+        $this->sessionDAL->unsetSessionIndexValue($index);
     }
 
-    public function isUserSessionActive(): bool {
-        return $this->sessionDAL->isUserSessionActive();
+    public function isSessionIndexValueSet(string $index): bool {
+        return $this->sessionDAL->isSessionIndexValueSet($index);
     }
 
-    public function setUserSession(string $username) {
-        return $this->sessionDAL->setUserSession($username);
+    public function validateAgainstSessionIndexValue(string $index, string $data): bool {
+        return $this->sessionDAL->validateAgainstSessionIndexValue($index, $data);
     }
 
-    public function unsetUserSession() {
-        return $this->sessionDAL->unsetUserSession();
+    public function keepUserLoggedIn(string $username) {
+        $this->rememberMeCookie = new \Model\RememberMeCookie($username);
+        $this->cookieDAL->saveUserCookie($this->rememberMeCookie);
     }
 
-    public function setInputFeedbackMessage(string $message) {
-        return $this->sessionDAL->setInputFeedbackMessage($message);
-    }
-
-    public function unsetInputFeedbackMessage() {
-        return $this->sessionDAL->unsetInputFeedbackMessage();
-    }
-
-    public function getInputFeedbackMessage() {
-        return $this->sessionDAL->getInputFeedbackMessage();
-    }
-
-    public function setUserBrowser(string $userBrowser) {
-        return $this->sessionDAL->setUserBrowser($userBrowser);
-    }
-
-    public function userBrowserValid(string $userBrowser): bool {
-        return $this->sessionDAL->userBrowserValid($userBrowser);
-    }
-
-    public function saveUserCookieAndReturnPassword(string $username, string $userBrowser) {
-        $rememberMeCookie = new \Model\RememberMeCookie($username, $userBrowser);
-        $this->cookieDAL->saveUserCookie($rememberMeCookie);
-        return $rememberMeCookie->getCookiePassword();
+    public function getCookiePassword() {
+        return $this->rememberMeCookie->getPassword();
     }
 
     public function getUserCookie(string $username) {
@@ -87,14 +70,14 @@ class Authenticator {
         $pass = new \Model\Password($password);
 
         $user = new \Model\User($name, $pass);
-        return $this->userDAL->registerUser($user);
+        return $this->userDAL->register($user);
     }
 
-    public function loginUser(string $username, string $password, bool $keepUserLoggedIn) {
+    public function loginUser(string $username, string $password) {
         $name = new \Model\Username($username);
         $pass = new \Model\Password($password);
 
-        $credentials = new \Model\Credentials($name, $pass, $keepUserLoggedIn);
-        return $this->userDAL->loginUser($credentials);
+        $user = new \Model\User($name, $pass);
+        return $this->userDAL->login($user);
     }
 }
