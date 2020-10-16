@@ -12,7 +12,10 @@ class Login {
 	private static $messageId = 'LoginView::Message';
 	private static $cookieNameKey = 'LoginView::CookieName';
 	private static $cookiePasswordKey = 'LoginView::CookiePassword';
-	private static $httpAgent = 'HTTP_USER_AGENT';
+
+	private static $sessionInputUserValue = __CLASS__ . '::sessionInputUserValue';
+	private static $activeUser = __CLASS__ . '::activeUser';
+	private static $userBrowser = __CLASS__ . '::userBrowser';
 
 	private $authenticator;
 
@@ -20,38 +23,14 @@ class Login {
 		$this->authenticator = $authenticator;
 	}
 
-	/**
-	 * Create HTTP response
-	 *
-	 * Should be called after a login attempt has been determined
-	 *
-	 * @return  void BUT writes to standard output and cookies!
-	 */
-	public function response(bool $isLoggedIn) {
-		$message = $this->authenticator->getInputFeedbackMessage();
-
-		$response = "";
-
-		if ($isLoggedIn) {
-			$response .= $this->generateLogoutButtonHTML($message);
-		} else {
-			$usernameInputValue = "";
-
-			if ($this->authenticator->isInputUserValueSet()) {
-				$usernameInputValue = $this->authenticator->getInputUserValue();
-			}
-
-			$response .= $this->generateLoginFormHTML($message, $usernameInputValue);
-		}
-		return $response;
-	}
-
 	public function userWantsToLogin(): bool {
 		return isset($_POST[self::$login]);
 	}
 
 	public function validateLoginForm() {
-		$this->authenticator->setInputUserValue($this->getRequestUserName());
+		$username = $this->getRequestUserName();
+		$this->authenticator->setSessionIndexValue(self::$sessionInputUserValue, $username);
+		// $this->authenticator->setInputUserValue($this->getRequestUserName());
 
 		if (!$this->getRequestUserName()) {
 			throw new \Exception("Username is missing");
@@ -94,10 +73,6 @@ class Login {
 		return $_COOKIE[self::$cookiePasswordKey];
 	}
 
-	public function getUserBrowser() {
-		return $_SERVER[self::$httpAgent];
-	}
-
 	public function getRequestUserName() {
 		return $_POST[self::$name];
 	}
@@ -108,6 +83,35 @@ class Login {
 
 	public function getRequestKeepMeLoggedIn() {
 		return isset($_POST[self::$keep]);
+	}
+
+	/**
+	 * Create HTTP response
+	 *
+	 * Should be called after a login attempt has been determined
+	 *
+	 * @return  void BUT writes to standard output and cookies!
+	 */
+	public function response(bool $isLoggedIn) {
+		$message = $this->flashMessage->getFlashMessage();
+		// $message = $this->authenticator->getInputFeedbackMessage();
+
+		$response = "";
+
+		if ($isLoggedIn) {
+			$response .= $this->generateLogoutButtonHTML($message);
+		} else {
+			$usernameInputValue = "";
+
+			if ($this->authenticator->isSessionIndexValueSet(self::$sessionInputUserValue)) {
+				// if ($this->authenticator->isInputUserValueSet()) {
+				$usernameInputValue = $this->authenticator->getSessionIndexValue(self::$sessionInputUserValue);
+				// $usernameInputValue = $this->authenticator->getInputUserValue();
+			}
+
+			$response .= $this->generateLoginFormHTML($message, $usernameInputValue);
+		}
+		return $response;
 	}
 
 	/**

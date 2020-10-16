@@ -3,45 +3,68 @@
 namespace Controller;
 
 class Login {
+    private static $usernameInputIndex = __CLASS__ . '::usernameInputIndex';
+
     private $loginView;
     private $authenticator;
+    private $flashMessage;
+    private $usernameInputSession;
 
-    public function __construct(\View\Login $loginView, \Authenticator $authenticator) {
-        $this->loginView = $loginView;
+    public function __construct(\Authenticator $authenticator, \View\Login $loginView, \FlashMessage $flashMessage) {
         $this->authenticator = $authenticator;
+        $this->loginView = $loginView;
+        $this->flashMessage = $flashMessage;
+        $this->usernameInputSession = new \SessionStorage(self::$usernameInputIndex);
     }
 
     public function doLogin() {
 
+        // User wants to login
         if ($this->loginView->userWantsToLogin()) {
             try {
+                // Form filled in
                 $this->loginView->validateLoginForm();
+
+                // Get username 
                 $username = $this->loginView->getRequestUserName();
+                // Get password
                 $password = $this->loginView->getRequestPassword();
+                // Check if user wants to be remembered
                 $keepUserLoggedIn = $this->loginView->getRequestKeepMeLoggedIn();
 
-                $this->authenticator->loginUser($username, $password, $keepUserLoggedIn);
 
+                // user wanted to be remembered
                 if ($keepUserLoggedIn) {
-                    $userBrowser = $this->loginView->getUserBrowser();
+                    // login user and set session
+                    $this->authenticator->loginUser($username, $password);
 
-                    $cookiePassword = $this->authenticator->saveUserCookieAndReturnPassword($username, $userBrowser);
+                    // store user cookie
+                    $this->authenticator->keepUserLoggedIn($username);
 
+                    // ask authenticator for cookie password
+                    $cookiePassword = $this->authenticator->getCookiePassword();
+
+
+                    // $userBrowser = $this->loginView->getUserBrowser();
+                    // $cookiePassword = $this->authenticator->saveUserCookieAndReturnPassword($username, $userBrowser);
+
+
+                    // Set view cookie
                     $this->loginView->setUserCookies($username, $cookiePassword);
 
-                    $this->authenticator->setInputFeedbackMessage("Welcome and you will be remembered");
+                    $this->flashMessage->set("Welcome and you will be remembered");
                 } else {
-                    $this->authenticator->setInputFeedbackMessage("Welcome");
+                    $this->flashMessage->set("Welcome");
                 }
 
-                $this->authenticator->setUserSession($username);
+                // $this->authenticator->setUserSession($username);
 
-                $userBrowser = $this->loginView->getUserBrowser();
-                $this->authenticator->setUserBrowser($userBrowser);
+                // $userBrowser = $this->loginView->getUserBrowser();
+                // $this->authenticator->setUserBrowser($userBrowser);
 
                 $this->loginView->redirectIndex();
             } catch (\Exception $e) {
-                $this->authenticator->setInputFeedbackMessage($e->getMessage());
+                $this->flashMessage->set($e->getMessage());
                 $this->loginView->redirectIndex();
             }
         }
@@ -57,7 +80,7 @@ class Login {
                 $this->loginView->unsetUserCookies();
             }
 
-            $this->authenticator->setInputFeedbackMessage("Bye bye!");
+            $this->flashMessage->set("Bye bye!");
             $this->loginView->redirectIndex();
         }
     }
@@ -87,9 +110,9 @@ class Login {
         try {
             $userBrowser = $this->loginView->getUserBrowser();
             $this->authenticator->validCookie($cookieName, $cookiePassword, $userBrowser);
-            $this->authenticator->setInputFeedbackMessage("Welcome back with cookie");
+            $this->flashMessage->set("Welcome back with cookie");
         } catch (\Exception $e) {
-            $this->authenticator->setInputFeedbackMessage($e->getMessage());
+            $this->flashMessage->set($e->getMessage());
         }
     }
 }
