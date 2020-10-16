@@ -1,40 +1,13 @@
 <?php
-
 session_start();
 
-require_once("model/RandomNumber.php");
-require_once("view/Game.php");
+// Authenticator
+require_once('../common/authenticator/Authenticator.php');
 
-$randValueSessionIndex = "randNumVal";
+// App
+require_once('Controller/GameApp.php');
 
-$rn = new \Model\RandomNumber(1, 100);
+$authenticator = new Authenticator();
 
-if (!isset($_SESSION[$randValueSessionIndex])) {
-    $_SESSION[$randValueSessionIndex] = $rn->getValueToGuess();
-}
-
-$game = new \View\Game($rn);
-$gameHTML = $game->getHTML();
-echo $gameHTML;
-
-if ($game->userWantsToGuess()) {
-    $guess = $game->getUserGuess();
-    $randNumVal = $_SESSION[$randValueSessionIndex];
-
-    echo "You guessed: " . $guess . "<br/>";
-    echo "Number is: " . $randNumVal . "<br/>";
-
-    if (is_numeric($guess)) {
-        if (intval($guess) < $randNumVal) {
-            echo "Number is higher";
-        }
-        if (intval($guess) > $randNumVal) {
-            echo "Number is lower";
-        }
-        if (intval($guess) == $randNumVal) {
-            echo "Correct guess!";
-        }
-    } else {
-        echo "Only input a number";
-    }
-}
+$app = new \Controller\GameApp($authenticator);
+$app->run();
