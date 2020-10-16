@@ -47,7 +47,7 @@ class Layout {
   }
 
   private function renderLinkForRegister() {
-    return '<p><a href="/">Back to login</a></p>';
+    return '<p><a href="/a2">Back to login</a></p>';
   }
 
   private function renderIsLoggedIn(bool $isLoggedIn) {
