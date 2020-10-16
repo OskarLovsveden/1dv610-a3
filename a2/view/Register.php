@@ -75,11 +75,11 @@ class Register {
 	}
 
 	public function redirectIndex() {
-		header("Location: /a2");
+		// header("Location: /a2");
 	}
 
 	public function redirectRegister() {
-		header("Location: /a2/" . self::$registerURL . "");
+		// header("Location: /a2/" . self::$registerURL . "");
 	}
 
 	public function getRequestUserName() {

@@ -17,7 +17,6 @@ class Login {
         try {
             $this->attemptCookieLogin();
 
-
             if ($this->loginView->userWantsToLogin()) {
                 $this->loginView->validateLoginForm();
 
@@ -40,18 +39,6 @@ class Login {
         }
     }
 
-    public function keepUserLoggedIn(string $username, string $password) {
-        $this->authenticator->login($username, $password);
-
-        $this->authenticator->keepUserLoggedIn($username);
-
-        $cookiePassword = $this->authenticator->getCookiePassword();
-
-        $this->loginView->setUserCookies($username, $cookiePassword);
-
-        $this->flashMessage->set("Welcome and you will be remembered");
-    }
-
     public function doLogout() {
         if ($this->loginView->userWantsToLogout()) {
             $this->authenticator->logout();
@@ -65,7 +52,19 @@ class Login {
         }
     }
 
-    public function attemptCookieLogin() {
+    private function keepUserLoggedIn(string $username, string $password) {
+        $this->authenticator->login($username, $password);
+
+        $this->authenticator->keepUserLoggedIn($username);
+
+        $cookiePassword = $this->authenticator->getCookiePassword();
+
+        $this->loginView->setUserCookies($username, $cookiePassword);
+
+        $this->flashMessage->set("Welcome and you will be remembered");
+    }
+
+    private function attemptCookieLogin() {
         $isCookieNameSet = $this->loginView->isUserCookieNameSet();
         $isCookiePasswordSet = $this->loginView->isUserCookiePasswordSet();
 

@@ -47,7 +47,7 @@ class Login {
 	}
 
 	public function redirectIndex() {
-		header("Location: /a2");
+		// header("Location: /a2");
 	}
 
 	public function setUserCookies($cookieName, $cookiePassword) {
