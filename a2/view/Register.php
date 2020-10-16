@@ -4,7 +4,7 @@ namespace View;
 
 class Register {
 	private static $register = 'RegisterView::Register';
-	private static $name = 'RegisterView::UserName';
+	private static $username = 'RegisterView::UserName';
 	private static $password = 'RegisterView::Password';
 	private static $passwordRepeat = 'RegisterView::PasswordRepeat';
 	private static $messageId = 'RegisterView::Message';
@@ -83,7 +83,7 @@ class Register {
 	}
 
 	public function getRequestUserName() {
-		return $_POST[self::$name];
+		return $_POST[self::$username];
 	}
 	public function getRequestPassword() {
 		return $_POST[self::$password];
@@ -101,8 +101,8 @@ class Register {
             <fieldset>
             <legend>Register a new user - Write username and password</legend>
                 <p id="' . self::$messageId . '">' . $message . '</p>
-                <label for="' . self::$name . '" >Username :</label>
-                <input type="text" size="20" name="' . self::$name . '" id="' . self::$name . '" value="' . $usernameInputValue . '" />
+                <label for="' . self::$username . '" >Username :</label>
+                <input type="text" size="20" name="' . self::$username . '" id="' . self::$username . '" value="' . $usernameInputValue . '" />
                 <br/>
                 <label for="' . self::$password . '" >Password  :</label>
                 <input type="password" size="20" name="' . self::$password . '" id="' . self::$password . '" value="" />
