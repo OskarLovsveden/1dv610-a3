@@ -11,6 +11,8 @@ require_once('model/Password.php');
 require_once('model/User.php');
 require_once('model/RememberMeCookie.php');
 
+require_once('Settings.php');
+
 class Authenticator {
     private static $authenticatorSessionIndex = __CLASS__ . '::authenticatorSessionIndex';
 
@@ -22,7 +24,7 @@ class Authenticator {
     private $rememberMeCookie;
 
     public function __construct() {
-        $this->database = new \Model\DAL\Database();
+        $this->database = new \Model\DAL\Database(new \Settings());
         $this->authSession = new \SessionStorage(self::$authenticatorSessionIndex);
         $this->cookieDAL = new \Model\DAL\CookieDAL($this->database);
         $this->userDAL = new \Model\DAL\UserDAL($this->database);

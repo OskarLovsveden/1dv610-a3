@@ -8,21 +8,26 @@ class Database {
     private $password;
     private $database;
 
-    public function __construct() {
-        if (isset($_SERVER, $_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] == 'localhost') {
-            $this->hostname = "localhost";
-            $this->username = "users";
-            $this->password = "users";
-            $this->database = "users";
-        } else {
-            $url = getenv('JAWSDB_URL');
-            $dbparts = parse_url($url);
+    public function __construct(\Settings $settings) {
+        // if (isset($_SERVER, $_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] == 'localhost') {
+        //     $this->hostname = "localhost";
+        //     $this->username = "users";
+        //     $this->password = "users";
+        //     $this->database = "users";
+        // } else {
+        // $url = getenv('JAWSDB_URL');
+        // $dbparts = parse_url($url);
 
-            $this->hostname = $dbparts['host'];
-            $this->username = $dbparts['user'];
-            $this->password = $dbparts['pass'];
-            $this->database = ltrim($dbparts['path'], '/');
-        }
+        // $this->hostname = $dbparts['host'];
+        // $this->username = $dbparts['user'];
+        // $this->password = $dbparts['pass'];
+        // $this->database = ltrim($dbparts['path'], '/');
+        // }
+
+        $this->hostname = $settings->getDBHost();
+        $this->username = $settings->getDBUser();
+        $this->password = $settings->getDBPass();
+        $this->database = $settings->getDB();
     }
 
     public function getConnection() {

@@ -39,6 +39,25 @@ class LoginApp {
     }
 
     public function run() {
+
+        try {
+            $isCookieNameSet = $this->loginView->isUserCookieNameSet();
+            $isCookiePasswordSet = $this->loginView->isUserCookiePasswordSet();
+
+            // var_dump($isCookieNameSet, $isCookiePasswordSet);
+            // exit;
+
+            if ($isCookieNameSet && $isCookiePasswordSet) {
+                $cookieUsername = $this->loginView->getUserCookieName();
+                $cookiePassword = $this->loginView->getUserCookiePassword();
+                $this->authenticator->loginWithCookie($cookieUsername, $cookiePassword);
+                $this->flashMessage->set("Welcome back with cookie");
+                // $this->loginView->redirectIndex();
+            }
+        } catch (\Exception $e) {
+            $this->flashMessage->set($e->getMessage());
+        }
+
         $userLoggedIn = $this->authenticator->isUserLoggedIn();
 
         if ($userLoggedIn) {

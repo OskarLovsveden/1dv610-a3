@@ -10,5 +10,3 @@ $authenticator = new Authenticator();
 
 $app = new \Controller\LoginApp($authenticator);
 $app->run();
-
-var_dump($_REQUEST);

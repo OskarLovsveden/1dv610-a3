@@ -25,15 +25,15 @@ class RememberMeCookie {
         return bin2hex(random_bytes(20));
     }
 
-    public function getName() {
+    public function getName(): string {
         return $this->cookieName;
     }
 
-    public function getPassword() {
+    public function getPassword(): string {
         return $this->cookiePassword;
     }
 
-    public function getBrowser() {
+    public function getBrowser(): string {
         return $this->cookieBrowser;
     }
 }

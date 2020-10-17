@@ -14,10 +14,10 @@ class Login {
     }
 
     public function doLogin() {
-        try {
-            $this->attemptCookieLogin();
+        // $this->attemptCookieLogin();
 
-            if ($this->loginView->userWantsToLogin()) {
+        if ($this->loginView->userWantsToLogin()) {
+            try {
                 $this->loginView->validateLoginForm();
 
                 $username = $this->loginView->getRequestUserName();
@@ -32,10 +32,10 @@ class Login {
                 }
 
                 $this->loginView->redirectIndex();
+            } catch (\Exception $e) {
+                $this->flashMessage->set($e->getMessage());
+                $this->loginView->redirectIndex();
             }
-        } catch (\Exception $e) {
-            $this->flashMessage->set($e->getMessage());
-            $this->loginView->redirectIndex();
         }
     }
 
@@ -64,16 +64,16 @@ class Login {
         $this->flashMessage->set("Welcome and you will be remembered");
     }
 
-    private function attemptCookieLogin() {
-        $isCookieNameSet = $this->loginView->isUserCookieNameSet();
-        $isCookiePasswordSet = $this->loginView->isUserCookiePasswordSet();
+    // private function attemptCookieLogin() {
+    //     $isCookieNameSet = $this->loginView->isUserCookieNameSet();
+    //     $isCookiePasswordSet = $this->loginView->isUserCookiePasswordSet();
 
-        if ($isCookieNameSet && $isCookiePasswordSet) {
-            $cookieUsername = $this->loginView->getUserCookieName();
-            $cookiePassword = $this->loginView->getUserCookiePassword();
-            $this->authenticator->loginWithCookie($cookieUsername, $cookiePassword);
-            $this->flashMessage->set("Welcome back with cookie");
-            $this->loginView->redirectIndex();
-        }
-    }
+    //     if ($isCookieNameSet && $isCookiePasswordSet) {
+    //         $cookieUsername = $this->loginView->getUserCookieName();
+    //         $cookiePassword = $this->loginView->getUserCookiePassword();
+    //         $this->authenticator->loginWithCookie($cookieUsername, $cookiePassword);
+    //         $this->flashMessage->set("Welcome back with cookie");
+    //         $this->loginView->redirectIndex();
+    //     }
+    // }
 }
