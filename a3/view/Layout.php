@@ -6,7 +6,7 @@ class Layout {
 
     private $gameView;
 
-    public function __construct(\A3\View\Game $gameView) {
+    public function __construct(\A3\View\Game $gameView, \A3\View\HighScore $highScoreView) {
         $this->gameView = $gameView;
     }
 
@@ -22,7 +22,11 @@ class Layout {
         <h1>Random Number Guessing Game</h1>
         <div class="container">';
 
-        $html .= $this->gameView->getHTML($gameWon);
+        if (isset($_GET["highscore"])) {
+            $html .= $this->highScoreView->getHTML();
+        } else {
+            $html .= $this->gameView->getHTML($gameWon);
+        }
 
         $html .= '
         </div>
