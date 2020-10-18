@@ -1,6 +1,6 @@
 <?php
 
-namespace Model\DAL;
+namespace A3\Model;
 
 class HighScore {
 }
