@@ -30,16 +30,10 @@ class SessionStorage {
   }
 
   public function hasValue(): bool {
-    if (isset($_SESSION[$this->index]) && !empty($_SESSION[$this->index])) {
-      return true;
-    }
-    return false;
+    return isset($_SESSION[$this->index]) && !empty($_SESSION[$this->index]);
   }
 
   public function equalsValue(string $data): bool {
-    if ($_SESSION[$this->index] === $data) {
-      return true;
-    }
-    return false;
+    return $_SESSION[$this->index] === $data;
   }
 }
