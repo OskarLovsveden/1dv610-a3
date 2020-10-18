@@ -5,52 +5,47 @@ namespace Controller;
 class Game {
     private static $randomNumberSessionIndex = __CLASS__ . "::randNumVal";
 
-    private $authenticator;
+    private $guessSession;
+    private $flashMessage;
     private $gameView;
     private $randomNumber;
 
-    public function __construct(\Authenticator $authenticator, \View\Game $gameView, \Model\RandomNumber $randomNumber) {
-        $this->authenticator = $authenticator;
+    public function __construct(\FlashMessage $flashMessage, \View\Game $gameView, \Model\RandomNumber $randomNumber) {
+        $this->guessSession = new \SessionStorage(self::$randomNumberSessionIndex);
+        $this->flashMessage = $flashMessage;
         $this->gameView = $gameView;
         $this->randomNumber = $randomNumber;
     }
 
     public function doGuess() {
-        // if (!isset($_SESSION[self::$randomNumberSessionIndex])) {
-        //     $_SESSION[self::$randomNumberSessionIndex] = $this->randomNumber->getValueToGuess();
-        // }
-        if (!$this->authenticator->isSessionIndexSet(self::$randomNumberSessionIndex)) {
+        if (!$this->guessSession->hasValue()) {
             $numberToBeGuessed = strval($this->randomNumber->getValueToGuess());
-            $this->authenticator->setSessionIndex(self::$randomNumberSessionIndex, $numberToBeGuessed);
-            // $_SESSION[self::$randomNumberSessionIndex] = $this->randomNumber->getValueToGuess();
+            $this->guessSession->store($numberToBeGuessed);
         }
-        var_dump($_SESSION);
-        echo "<br/>";
 
         if ($this->gameView->userWantsToGuess()) {
             try {
-                $guess = $this->gameView->getUserGuess();
-                $numberToBeGuessed = $this->authenticator->getSessionIndex(self::$randomNumberSessionIndex);
+                $this->gameView->validateGuessForm();
 
-                echo $guess . "<br/>";
-                echo $numberToBeGuessed . "<br/>";
+                $guess = $this->gameView->getGuess();
+                $numberToBeGuessed = $this->guessSession->getValue();
 
                 if (is_numeric($guess)) {
                     if (intval($guess) < $numberToBeGuessed) {
-                        throw new \Exception("Number is higher");
+                        $this->flashMessage->set("Number is higher");
                     }
                     if (intval($guess) > $numberToBeGuessed) {
-                        throw new \Exception("Number is lower");
+                        $this->flashMessage->set("Number is lower");
                     }
                     if (intval($guess) == $numberToBeGuessed) {
-                        echo "CORRECT MY MAN";
-                        unset($_SESSION[self::$randomNumberSessionIndex]);
+                        $this->flashMessage->set("You guessed it!");
+                        $this->guessSession->removeValue();
                     }
                 } else {
-                    throw new \Exception("Only input a number");
+                    $this->flashMessage->set("Only input a number");
                 }
             } catch (\Exception $e) {
-                echo $e->getMessage();
+                $this->flashMessage->set($e->getMessage());
             }
         }
     }
