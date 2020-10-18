@@ -9,8 +9,8 @@ class SessionStorage {
     $this->index = $index;
   }
 
-  public function store(string $data) {
-    $_SESSION[$this->index] = $data;
+  public function store(string $toBeStored) {
+    $_SESSION[$this->index] = $toBeStored;
   }
 
   public function getValue(): string {
@@ -33,7 +33,7 @@ class SessionStorage {
     return isset($_SESSION[$this->index]) && !empty($_SESSION[$this->index]);
   }
 
-  public function equalsValue(string $data): bool {
-    return $_SESSION[$this->index] === $data;
+  public function equalsValue(string $toBeEqualTo): bool {
+    return $_SESSION[$this->index] === $toBeEqualTo;
   }
 }
