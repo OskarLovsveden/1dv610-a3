@@ -2,7 +2,6 @@
 
 require_once('../common/session-storage/SessionStorage.php');
 
-require_once('model/DAL/Database.php');
 require_once('model/DAL/CookieDAL.php');
 require_once('model/DAL/UserDAL.php');
 
@@ -21,7 +20,7 @@ class Authenticator {
 
     private static $httpAgent = 'HTTP_USER_AGENT';
 
-    private $database;
+    private $settings;
     private $userSession;
 
     // TODO Prevent Session hijacking (This makes automatic tests never stop loading)
@@ -33,14 +32,14 @@ class Authenticator {
     private $rememberMeCookie;
 
     public function __construct() {
-        $this->database = new \Model\DAL\Database(new \Settings());
+        $this->settings = new \Settings();
         $this->userSession = new \SessionStorage(self::$userSessionIndex);
 
         // TODO Prevent Session hijacking (This makes automatic tests never stop loading)
         // $this->browserSession = new \SessionStorage(self::$browserSessionIndex);
 
-        $this->cookieDAL = new \Model\DAL\CookieDAL($this->database);
-        $this->userDAL = new \Model\DAL\UserDAL($this->database);
+        $this->cookieDAL = new \Model\DAL\CookieDAL($this->settings);
+        $this->userDAL = new \Model\DAL\UserDAL($this->settings);
     }
 
     public function register(string $username, string $password) {
@@ -63,15 +62,17 @@ class Authenticator {
     }
 
     public function loginWithCookie(string $cookieName, string $cookiePassword) {
-        $this->isUserCookieValid($cookieName, $cookiePassword);
+        $rememberMeCookie = new \Model\RememberMeCookie($this->currentBrowser(), $cookieName, $cookiePassword);
+        $this->cookieDAL->validCookie($rememberMeCookie);
+
         $this->userSession->store($cookieName);
     }
 
     public function login(string $username, string $password) {
         $un = new \Model\Username($username);
         $pw = new \Model\Password($password);
-
         $user = new \Model\User($un, $pw);
+
         $this->userDAL->login($user);
 
         $unString = $un->getUsername();
@@ -98,14 +99,5 @@ class Authenticator {
 
     private function currentBrowser(): string {
         return $_SERVER[self::$httpAgent];
-    }
-
-    private function isUserCookieValid(string $cookieName, string $cookiePassword): bool {
-        $rememberMeCookie = new \Model\RememberMeCookie($this->currentBrowser(), $cookieName, $cookiePassword);
-        $cn = $rememberMeCookie->getName();
-        $cp = $rememberMeCookie->getPassword();
-        $ub = $rememberMeCookie->getBrowser();
-
-        return $this->cookieDAL->validCookie($cn, $cp, $ub);
     }
 }

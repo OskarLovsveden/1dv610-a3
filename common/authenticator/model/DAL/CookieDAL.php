@@ -3,16 +3,15 @@
 namespace Model\DAL;
 
 class CookieDAL {
-
-    private $database;
-
     private static $table = 'cookies';
     private static $rowUsername = 'cookieUsername';
     private static $rowPassword = 'cookiePassword';
     private static $rowBrowser = 'cookieBrowser';
 
-    public function __construct(Database $database) {
-        $this->database = $database;
+    private $settings;
+
+    public function __construct(\Settings $settings) {
+        $this->settings = $settings;
         $this->createTableIfNotExists();
     }
 
@@ -22,9 +21,7 @@ class CookieDAL {
         $cookiePassword = $rememberMeCookie->getPassword();
         $userBrowser = $rememberMeCookie->getBrowser();
 
-        $this->createTableIfNotExists();
-
-        $connection = $this->database->getConnection();
+        $connection = $this->settings->getDBConnection();
 
         $sql = "REPLACE INTO " . self::$table . " (" . self::$rowUsername . ", " . self::$rowPassword . ", " . self::$rowBrowser . ") VALUES ('" . $cookieName . "', '" . $cookiePassword . "', '" . $userBrowser . "')";
 
@@ -34,7 +31,7 @@ class CookieDAL {
 
     public function getUserCookie(string $username) {
 
-        $connection = $this->database->getConnection();
+        $connection = $this->settings->getDBConnection();
 
         $sql = "SELECT * FROM " . self::$table . " WHERE " . self::$rowUsername . " LIKE BINARY '" . $username . "' LIMIT 1";
 
@@ -48,21 +45,23 @@ class CookieDAL {
         return $row;
     }
 
-    public function validCookie(string $cookieName, string $cookiePassword, string $userBrowser): bool {
-        $userCookie = $this->getUserCookie($cookieName);
+    public function validCookie(\Model\RememberMeCookie $rememberMeCookie) {
+        $cn = $rememberMeCookie->getName();
+        $cp = $rememberMeCookie->getPassword();
+        $ub = $rememberMeCookie->getBrowser();
 
-        $validPassword = $userCookie[self::$rowPassword] === $cookiePassword;
-        $validBrowser = $userCookie[self::$rowBrowser] === $userBrowser;
+        $userCookie = $this->getUserCookie($cn);
 
-        if ($userCookie && $validBrowser && $validPassword) {
-            return true;
+        $validPassword = $userCookie[self::$rowPassword] === $cp;
+        $validBrowser = $userCookie[self::$rowBrowser] === $ub;
+
+        if (!$userCookie && !$validBrowser && !$validPassword) {
+            throw new \Exception("Wrong information in cookies");
         }
-
-        throw new \Exception("Wrong information in cookies");
     }
 
     private function createTableIfNotExists() {
-        $connection = $this->database->getConnection();
+        $connection = $this->settings->getDBConnection();
 
         $sql = "CREATE TABLE IF NOT EXISTS " . self::$table . " (
             " . self::$rowUsername . " VARCHAR(30) NOT NULL UNIQUE,

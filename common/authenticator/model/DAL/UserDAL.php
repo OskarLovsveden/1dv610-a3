@@ -3,14 +3,14 @@
 namespace Model\DAL;
 
 class UserDAL {
-    private $database;
-
     private static $table = "users";
     private static $rowUsername = "username";
     private static $rowPassword = "password";
 
-    public function __construct(Database $database) {
-        $this->database = $database;
+    private $settings;
+
+    public function __construct(\Settings $settings) {
+        $this->settings = $settings;
         $this->createTableIfNotExists();
     }
 
@@ -18,24 +18,40 @@ class UserDAL {
         $username = $user->getUsername()->getUsername();
         $password = password_hash($user->getPassword()->getPassword(), PASSWORD_BCRYPT);
 
-        $connection = $this->database->getConnection();
+        $connection = $this->settings->getDBConnection();
 
         if ($this->exists($username)) {
             throw new \Exception("User exists, pick another username.");
         }
 
-        $sql = "INSERT INTO " . self::$table . " (" . self::$rowUsername . ", " . self::$rowPassword . ") VALUES ('" . $username . "', '" . $password . "')";
+        $sql = "INSERT INTO " . self::$table . " (" . self::$rowUsername . ", " . self::$rowPassword . ") VALUES ( ?, ? ) ";
 
-        $connection->query($sql);
-        $connection->close();
+        $stmt = $connection->prepare($sql);
+        if ($stmt === FALSE) {
+            // TODO Fix Unhandled Exception
+            // throw new \Exception("Error when preparing INSERT :" . $connection->error);
+        }
+
+        $bindParam = $stmt->bind_param("ss", $username, $password);
+        if ($bindParam === FALSE) {
+            // TODO Fix Unhandled Exception
+            // throw new \Exception("Error on bind_param :" . $stmt->error);
+        }
+
+        $execute = $stmt->execute();
+        if ($execute === FALSE) {
+            // TODO Fix Unhandled Exception
+            // throw new \Exception("Error on execute :" . $stmt->error);
+        }
+
+        $stmt->close();
     }
 
     public function login(\Model\User $user) {
+        $connection = $this->settings->getDBConnection();
+
         $username = $user->getUsername()->getUsername();
         $password = $user->getPassword()->getPassword();
-
-
-        $connection = $this->database->getConnection();
 
         if ($this->exists($username)) {
             $sql = "SELECT " . self::$rowPassword . " FROM " . self::$table . " WHERE " . self::$rowUsername . " LIKE BINARY '" . $username . "'";
@@ -54,12 +70,12 @@ class UserDAL {
     }
 
     private function exists(string $username): bool {
-        $connection = $this->database->getConnection();
+        $connection = $this->settings->getDBConnection();
 
-        $query = "SELECT * FROM " . self::$table . " WHERE " . self::$rowUsername . " LIKE BINARY '" . $username . "'";
+        $sql = "SELECT * FROM " . self::$table . " WHERE " . self::$rowUsername . " LIKE BINARY '" . $username . "'";
         $userExists = 0;
 
-        if ($stmt = $connection->prepare($query)) {
+        if ($stmt = $connection->prepare($sql)) {
             $stmt->execute();
             $stmt->store_result();
             $userExists = $stmt->num_rows;
@@ -70,14 +86,18 @@ class UserDAL {
     }
 
     private function createTableIfNotExists() {
-        $connection = $this->database->getConnection();
+        $connection = $this->settings->getDBConnection();
 
         $sql = "CREATE TABLE IF NOT EXISTS " . self::$table . " (
-            " . self::$rowUsername . " VARCHAR(30) NOT NULL UNIQUE,
+    	    " . self::$rowUsername . " VARCHAR(30) NOT NULL UNIQUE,
             " . self::$rowPassword . " VARCHAR(60) NOT NULL
-            )";
+    	  )";
 
-        $connection->query($sql);
-        $connection->close();
+        $result = $connection->query($sql);
+
+        if ($result === FALSE) {
+            // TODO Fix Unhandled Exception
+            // throw new  \Exception("Error when creating table " . self::$table . " :" . $connection->error);
+        }
     }
 }
