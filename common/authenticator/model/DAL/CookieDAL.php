@@ -48,14 +48,11 @@ class CookieDAL {
     public function validCookie(\Model\RememberMeCookie $rememberMeCookie) {
         $cn = $rememberMeCookie->getName();
         $cp = $rememberMeCookie->getPassword();
-        $ub = $rememberMeCookie->getBrowser();
 
         $userCookie = $this->getUserCookie($cn);
+        $invalidPassword = $userCookie[self::$rowPassword] !== $cp;
 
-        $validPassword = $userCookie[self::$rowPassword] === $cp;
-        $validBrowser = $userCookie[self::$rowBrowser] === $ub;
-
-        if (!$userCookie && !$validBrowser && !$validPassword) {
+        if ($userCookie && $invalidPassword) {
             throw new \Exception("Wrong information in cookies");
         }
     }
