@@ -34,6 +34,7 @@ class Login {
             }
         } catch (\Exception $e) {
             $this->flashMessage->set($e->getMessage());
+            $this->loginView->unsetUserCookies();
             $this->loginView->redirectIndex();
         }
     }
@@ -53,11 +54,9 @@ class Login {
 
     private function keepUserLoggedIn(string $username, string $password) {
         $this->authenticator->login($username, $password);
-
         $this->authenticator->keepUserLoggedIn($username);
 
         $cookiePassword = $this->authenticator->getCookiePassword();
-
         $this->loginView->setUserCookies($username, $cookiePassword);
 
         $this->flashMessage->set("Welcome and you will be remembered");
