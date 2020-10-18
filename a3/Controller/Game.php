@@ -3,50 +3,65 @@
 namespace A3\Controller;
 
 class Game {
-    private static $guessSessionIndex = __CLASS__ . "::guessSessionIndex";
-
-    private $guessSession;
     private $flashMessage;
     private $gameView;
-    private $randomNumber;
+    private $gameState;
 
-    public function __construct(\FlashMessage $flashMessage, \A3\View\Game $gameView, \A3\Model\RandomNumber $randomNumber) {
-        $this->guessSession = new \SessionStorage(self::$guessSessionIndex);
+    public function __construct(\FlashMessage $flashMessage, \A3\View\Game $gameView, \A3\Model\GameState $gameState) {
         $this->flashMessage = $flashMessage;
         $this->gameView = $gameView;
-        $this->randomNumber = $randomNumber;
+        $this->gameState = $gameState;
     }
 
-    public function doGuess() {
-        if (!$this->guessSession->hasValue()) {
-            $numberToBeGuessed = strval($this->randomNumber->getValueToGuess());
-            $this->guessSession->store($numberToBeGuessed);
-        }
-
+    public function doPlay() {
         if ($this->gameView->userWantsToGuess()) {
             try {
                 $this->gameView->validateGuessForm();
 
                 $guess = $this->gameView->getGuess();
-                $numberToBeGuessed = $this->guessSession->getValue();
+                $numberToBeMatched = $this->gameState->getNumberToBeGuessed();
 
                 if (is_numeric($guess)) {
-                    if (intval($guess) < $numberToBeGuessed) {
+                    $guessAsInt = intval($guess);
+                    $this->gameState->increaseAmountOfTriesByOne();
+
+                    if ($guessAsInt < $numberToBeMatched) {
                         $this->flashMessage->set("Number is higher");
                     }
-                    if (intval($guess) > $numberToBeGuessed) {
+                    if ($guessAsInt > $numberToBeMatched) {
                         $this->flashMessage->set("Number is lower");
                     }
-                    if (intval($guess) == $numberToBeGuessed) {
-                        $this->flashMessage->set("You guessed it!");
-                        $this->guessSession->removeValue();
+                    if ($guessAsInt == $numberToBeMatched) {
+                        $this->gameState->gameWasWon();
+                        $this->gameState->saveCorrectGuess($guessAsInt);
                     }
                 } else {
                     $this->flashMessage->set("The guess has to be a number");
                 }
+
+                $this->gameView->redirectIndex();
             } catch (\Exception $e) {
                 $this->flashMessage->set($e->getMessage());
+                $this->gameView->redirectIndex();
             }
+        }
+    }
+
+    public function doSaveHighScore() {
+        if ($this->gameView->userWantsToSaveHighScore()) {
+            $difficulty = $this->gameState->getMaxNumberToBeGuessed();
+            $numberOfTries = $this->gameState->getAmountOfTries();
+
+            $this->highScoreDAL->save($difficulty, $numberOfTries);
+            $this->gameState->reset();
+            $this->gameView->redirectIndex();
+        }
+    }
+
+    public function doResetGame() {
+        if ($this->gameView->userWantsToResetGame()) {
+            $this->gameState->reset();
+            $this->gameView->redirectIndex();
         }
     }
 }
