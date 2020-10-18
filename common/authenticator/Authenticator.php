@@ -15,12 +15,18 @@ require_once('Settings.php');
 
 class Authenticator {
     private static $userSessionIndex = __CLASS__ . '::userSessionIndex';
-    private static $browserSessionIndex = __CLASS__ . '::browserSessionIndex';
+
+    // TODO Prevent Session hijacking (This makes automatic tests never stop loading)
+    // private static $browserSessionIndex = __CLASS__ . '::browserSessionIndex';
+
     private static $httpAgent = 'HTTP_USER_AGENT';
 
     private $database;
     private $userSession;
-    private $browserSession;
+
+    // TODO Prevent Session hijacking (This makes automatic tests never stop loading)
+    // private $browserSession;
+
     private $cookieDAL;
     private $userDAL;
 
@@ -29,7 +35,10 @@ class Authenticator {
     public function __construct() {
         $this->database = new \Model\DAL\Database(new \Settings());
         $this->userSession = new \SessionStorage(self::$userSessionIndex);
-        $this->browserSession = new \SessionStorage(self::$browserSessionIndex);
+
+        // TODO Prevent Session hijacking (This makes automatic tests never stop loading)
+        // $this->browserSession = new \SessionStorage(self::$browserSessionIndex);
+
         $this->cookieDAL = new \Model\DAL\CookieDAL($this->database);
         $this->userDAL = new \Model\DAL\UserDAL($this->database);
     }
@@ -47,7 +56,7 @@ class Authenticator {
         $userSessionActive = $this->userSession->hasValue();
         return $userSessionActive;
 
-        // TODO Prevent Session hijacking
+        // TODO Prevent Session hijacking (This makes automatic tests never stop loading)
         // $userSessionActive = $this->userSession->hasValue();
         // $userBrowserValid = $this->browserSession->hasValue() && $this->browserSession->equalsValue($this->currentBrowser());
         // return $userSessionActive && $userBrowserValid;
@@ -68,7 +77,7 @@ class Authenticator {
         $unString = $un->getUsername();
         $this->userSession->store($unString);
 
-        // TODO Prevent Session hijacking
+        // TODO Prevent Session hijacking (This makes automatic tests never stop loading)
         // $this->browserSession->store($this->currentBrowser());
     }
 
