@@ -25,13 +25,13 @@ class RandomNumber {
         $this->value = rand($minValue, $maxValue);
     }
 
-    public function getValueToGuess() {
+    public function getValueToGuess(): int {
         return $this->value;
     }
-    public function getMinValue() {
+    public function getMinValue(): int {
         return $this->minValue;
     }
-    public function getMaxValue() {
+    public function getMaxValue(): int {
         return $this->maxValue;
     }
 }
