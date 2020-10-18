@@ -81,7 +81,7 @@ class Authenticator {
     // }
 
     public function isUserCookieValid(string $cookieName, string $cookiePassword): bool {
-        $rememberMeCookie = new \Model\RememberMeCookie($cookieName, $cookiePassword);
+        $rememberMeCookie = new \Model\RememberMeCookie($cookieName, $cookiePassword, $cookiePassword);
         $cn = $rememberMeCookie->getName();
         $cp = $rememberMeCookie->getPassword();
         $ub = $rememberMeCookie->getBrowser();
