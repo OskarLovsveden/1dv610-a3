@@ -16,6 +16,7 @@ require_once("model/GameState.php");
 // View
 require_once("view/Layout.php");
 require_once("view/Game.php");
+require_once("view/HighScore.php");
 
 class Application {
     private $flashMessage;
@@ -24,6 +25,7 @@ class Application {
     private $gameState;
 
     private $gameView;
+    private $highScoreView;
     private $layoutView;
 
     private $gameController;
@@ -34,10 +36,9 @@ class Application {
         $this->randomNumber = new \A3\Model\RandomNumber(1, 100);
         $this->gameState = new \A3\Model\GameState($this->randomNumber);
 
-
-
         $this->gameView = new \A3\View\Game($this->flashMessage, $this->gameState);
-        $this->layoutView = new \A3\View\Layout($this->gameView);
+        $this->highScoreView = new \A3\View\HighScore();
+        $this->layoutView = new \A3\View\Layout($this->gameView, $this->highScoreView);
 
         $this->gameController = new \A3\Controller\Game($this->flashMessage, $this->gameView, $this->gameState);
     }
