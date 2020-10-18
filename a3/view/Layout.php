@@ -10,22 +10,25 @@ class Layout {
         $this->gameView = $gameView;
     }
 
-    public function renderHTML() {
-        $renderHTML = '
+    public function renderHTML(bool $gameWon) {
+        $html = '
         <!DOCTYPE html>
         <html>
         <head>
         <meta charset="utf-8">
-        <title>Login Example</title>
+        <title>Random Number Game</title>
         </head>
         <body>
-        <h1>Assignment 2</h1>
-        <div class="container">
-        ' . $this->gameView->getHTML() . '
+        <h1>Random Number Guessing Game</h1>
+        <div class="container">';
+
+        $html .= $this->gameView->getHTML($gameWon);
+
+        $html .= '
         </div>
         </body>
         </html>';
 
-        echo $renderHTML;
+        echo $html;
     }
 }
