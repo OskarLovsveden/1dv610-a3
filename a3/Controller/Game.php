@@ -42,7 +42,7 @@ class Game {
                         $this->guessSession->removeValue();
                     }
                 } else {
-                    $this->flashMessage->set("Only input a number");
+                    $this->flashMessage->set("The guess has to be a number");
                 }
             } catch (\Exception $e) {
                 $this->flashMessage->set($e->getMessage());
