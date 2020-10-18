@@ -13,16 +13,15 @@ class Login {
 	private static $cookieNameKey = 'LoginView::CookieName';
 	private static $cookiePasswordKey = 'LoginView::CookiePassword';
 
-	private static $usernameInputIndex = __CLASS__ . '::usernameInputIndex';
 	// private static $activeUser = __CLASS__ . '::activeUser';
 	// private static $userBrowser = __CLASS__ . '::userBrowser';
 
 	private $flashMessage;
 	private $usernameInputSession;
 
-	public function __construct(\FlashMessage $flashMessage) {
+	public function __construct(\FlashMessage $flashMessage, \SessionStorage $usernameInputSession) {
 		$this->flashMessage = $flashMessage;
-		$this->usernameInputSession = new \SessionStorage(self::$usernameInputIndex);
+		$this->usernameInputSession = $usernameInputSession;
 	}
 
 	public function userWantsToLogin(): bool {
