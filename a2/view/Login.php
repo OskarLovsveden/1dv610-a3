@@ -13,9 +13,6 @@ class Login {
 	private static $cookieNameKey = 'LoginView::CookieName';
 	private static $cookiePasswordKey = 'LoginView::CookiePassword';
 
-	// private static $activeUser = __CLASS__ . '::activeUser';
-	// private static $userBrowser = __CLASS__ . '::userBrowser';
-
 	private $flashMessage;
 	private $usernameInputSession;
 
