@@ -1,6 +1,6 @@
 <?php
 
-namespace View;
+namespace A3\View;
 
 class Start {
 }
