@@ -1,19 +1,19 @@
 <?php
 
-namespace Controller;
+namespace A2\Controller;
 
 require_once('../common/flash-message/FlashMessage.php');
 require_once('../common/session-storage/SessionStorage.php');
 
-require_once('Controller/Login.php');
-require_once('Controller/Register.php');
+require_once('controller/Login.php');
+require_once('controller/Register.php');
 
 require_once('view/Login.php');
 require_once('view/Register.php');
 require_once('view/DateTime.php');
 require_once('view/Layout.php');
 
-class LoginApp {
+class Application {
     private static $usernameInputIndex = __CLASS__ . '::usernameInputIndex';
 
     private $loginView;
@@ -33,13 +33,13 @@ class LoginApp {
 
         $usernameInputSession = new \SessionStorage(self::$usernameInputIndex);
 
-        $this->loginView = new \View\Login($this->flashMessage, $usernameInputSession);
-        $this->registerView = new \View\Register($this->flashMessage, $usernameInputSession);
-        $this->dateTimeView = new \View\DateTime();
-        $this->layoutView = new \View\Layout();
+        $this->loginView = new \A2\View\Login($this->flashMessage, $usernameInputSession);
+        $this->registerView = new \A2\View\Register($this->flashMessage, $usernameInputSession);
+        $this->dateTimeView = new \A2\View\DateTime();
+        $this->layoutView = new \A2\View\Layout();
 
-        $this->loginController = new \Controller\Login($this->loginView, $authenticator, $this->flashMessage);
-        $this->registerController = new \Controller\Register($this->registerView, $authenticator, $this->flashMessage);
+        $this->loginController = new \A2\Controller\Login($this->loginView, $authenticator, $this->flashMessage);
+        $this->registerController = new \A2\Controller\Register($this->registerView, $authenticator, $this->flashMessage);
     }
 
     public function run() {

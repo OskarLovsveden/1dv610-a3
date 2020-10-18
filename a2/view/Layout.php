@@ -1,6 +1,6 @@
 <?php
 
-namespace View;
+namespace A2\View;
 
 class Layout {
 
@@ -10,7 +10,7 @@ class Layout {
     return isset($_GET[self::$registerPost]);
   }
 
-  public function render(bool $isLoggedIn, \View\Login $loginView, \View\Register $registerView, \View\DateTime $dateTimeView) {
+  public function render(bool $isLoggedIn, \A2\View\Login $loginView, \A2\View\Register $registerView, \A2\View\DateTime $dateTimeView) {
     $renderHTML = '
     <!DOCTYPE html>
     <html>

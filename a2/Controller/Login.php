@@ -1,13 +1,13 @@
 <?php
 
-namespace Controller;
+namespace A2\Controller;
 
 class Login {
     private $loginView;
     private $authenticator;
     private $flashMessage;
 
-    public function __construct(\View\Login $loginView, \Authenticator $authenticator, \FlashMessage $flashMessage) {
+    public function __construct(\A2\View\Login $loginView, \Authenticator $authenticator, \FlashMessage $flashMessage) {
         $this->authenticator = $authenticator;
         $this->loginView = $loginView;
         $this->flashMessage = $flashMessage;

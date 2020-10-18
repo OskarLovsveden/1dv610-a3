@@ -1,6 +1,6 @@
 <?php
 
-namespace View;
+namespace A2\View;
 
 class Register {
 	private static $register = 'RegisterView::Register';

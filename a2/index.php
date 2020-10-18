@@ -4,9 +4,9 @@
 require_once('../common/authenticator/Authenticator.php');
 
 // App
-require_once('Controller/LoginApp.php');
+require_once('controller/Application.php');
 
 $authenticator = new Authenticator();
 
-$app = new \Controller\LoginApp($authenticator);
+$app = new \A2\Controller\Application($authenticator);
 $app->run();
