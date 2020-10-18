@@ -14,10 +14,13 @@ require_once('model/RememberMeCookie.php');
 require_once('Settings.php');
 
 class Authenticator {
-    private static $authenticatorSessionIndex = __CLASS__ . '::authenticatorSessionIndex';
+    private static $userSessionIndex = __CLASS__ . '::userSessionIndex';
+    private static $browserSessionIndex = __CLASS__ . '::browserSessionIndex';
+    private static $httpAgent = 'HTTP_USER_AGENT';
 
     private $database;
-    private $authSession;
+    private $userSession;
+    private $browserSession;
     private $cookieDAL;
     private $userDAL;
 
@@ -25,7 +28,8 @@ class Authenticator {
 
     public function __construct() {
         $this->database = new \Model\DAL\Database(new \Settings());
-        $this->authSession = new \SessionStorage(self::$authenticatorSessionIndex);
+        $this->userSession = new \SessionStorage(self::$userSessionIndex);
+        $this->browserSession = new \SessionStorage(self::$browserSessionIndex);
         $this->cookieDAL = new \Model\DAL\CookieDAL($this->database);
         $this->userDAL = new \Model\DAL\UserDAL($this->database);
     }
@@ -39,15 +43,16 @@ class Authenticator {
     }
 
     public function isUserLoggedIn(): bool {
-        if ($this->authSession->hasValue()) {
-            return true;
-        }
-        return false;
+
+        $userSessionActive = $this->userSession->hasValue();
+        $userBrowserValid = $this->browserSession->hasValue() && $this->browserSession->equalsValue($this->currentBrowser());
+
+        return $userSessionActive && $userBrowserValid;
     }
 
     public function loginWithCookie(string $cookieName, string $cookiePassword) {
         $this->isUserCookieValid($cookieName, $cookiePassword);
-        $this->authSession->store($cookieName);
+        $this->userSession->store($cookieName);
     }
 
     public function login(string $username, string $password) {
@@ -58,17 +63,19 @@ class Authenticator {
         $this->userDAL->login($user);
 
         $unString = $un->getUsername();
-        $this->authSession->store($unString);
+        $this->userSession->store($unString);
+
+        $this->browserSession->store($this->currentBrowser());
     }
 
     public function keepUserLoggedIn(string $username) {
-        $this->rememberMeCookie = new \Model\RememberMeCookie($username);
+        $this->rememberMeCookie = new \Model\RememberMeCookie($this->currentBrowser(), $username);
         $this->cookieDAL->saveUserCookie($this->rememberMeCookie);
     }
 
     public function logout() {
-        if ($this->authSession->hasValue()) {
-            $this->authSession->removeValue();
+        if ($this->userSession->hasValue()) {
+            $this->userSession->removeValue();
         }
     }
 
@@ -76,12 +83,12 @@ class Authenticator {
         return $this->rememberMeCookie->getPassword();
     }
 
-    // public function getUserCookie(string $username) {
-    //     return $this->cookieDAL->getUserCookie($username);
-    // }
+    private function currentBrowser(): string {
+        return $_SERVER[self::$httpAgent];
+    }
 
-    public function isUserCookieValid(string $cookieName, string $cookiePassword): bool {
-        $rememberMeCookie = new \Model\RememberMeCookie($cookieName, $cookiePassword, $cookiePassword);
+    private function isUserCookieValid(string $cookieName, string $cookiePassword): bool {
+        $rememberMeCookie = new \Model\RememberMeCookie($this->currentBrowser(), $cookieName, $cookiePassword);
         $cn = $rememberMeCookie->getName();
         $cp = $rememberMeCookie->getPassword();
         $ub = $rememberMeCookie->getBrowser();
