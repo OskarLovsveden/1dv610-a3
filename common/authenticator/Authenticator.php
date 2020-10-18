@@ -45,9 +45,12 @@ class Authenticator {
     public function isUserLoggedIn(): bool {
 
         $userSessionActive = $this->userSession->hasValue();
-        $userBrowserValid = $this->browserSession->hasValue() && $this->browserSession->equalsValue($this->currentBrowser());
+        return $userSessionActive;
 
-        return $userSessionActive && $userBrowserValid;
+        // TODO Prevent Session hijacking
+        // $userSessionActive = $this->userSession->hasValue();
+        // $userBrowserValid = $this->browserSession->hasValue() && $this->browserSession->equalsValue($this->currentBrowser());
+        // return $userSessionActive && $userBrowserValid;
     }
 
     public function loginWithCookie(string $cookieName, string $cookiePassword) {
@@ -65,7 +68,8 @@ class Authenticator {
         $unString = $un->getUsername();
         $this->userSession->store($unString);
 
-        $this->browserSession->store($this->currentBrowser());
+        // TODO Prevent Session hijacking
+        // $this->browserSession->store($this->currentBrowser());
     }
 
     public function keepUserLoggedIn(string $username) {
