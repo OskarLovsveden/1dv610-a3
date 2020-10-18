@@ -1,6 +1,6 @@
 <?php
 
-namespace Model;
+namespace A3\Model;
 
 class RandomNumber {
     private $minValue;

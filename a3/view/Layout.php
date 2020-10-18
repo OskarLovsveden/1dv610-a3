@@ -1,12 +1,12 @@
 <?php
 
-namespace View;
+namespace A3\View;
 
 class Layout {
 
     private $gameView;
 
-    public function __construct(\View\Game $gameView) {
+    public function __construct(\A3\View\Game $gameView) {
         $this->gameView = $gameView;
     }
 

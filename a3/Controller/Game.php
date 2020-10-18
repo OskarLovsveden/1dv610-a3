@@ -1,17 +1,17 @@
 <?php
 
-namespace Controller;
+namespace A3\Controller;
 
 class Game {
-    private static $randomNumberSessionIndex = __CLASS__ . "::randNumVal";
+    private static $guessSessionIndex = __CLASS__ . "::guessSessionIndex";
 
     private $guessSession;
     private $flashMessage;
     private $gameView;
     private $randomNumber;
 
-    public function __construct(\FlashMessage $flashMessage, \View\Game $gameView, \Model\RandomNumber $randomNumber) {
-        $this->guessSession = new \SessionStorage(self::$randomNumberSessionIndex);
+    public function __construct(\FlashMessage $flashMessage, \A3\View\Game $gameView, \A3\Model\RandomNumber $randomNumber) {
+        $this->guessSession = new \SessionStorage(self::$guessSessionIndex);
         $this->flashMessage = $flashMessage;
         $this->gameView = $gameView;
         $this->randomNumber = $randomNumber;

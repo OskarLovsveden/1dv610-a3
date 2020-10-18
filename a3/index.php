@@ -5,9 +5,9 @@ session_start();
 require_once('../common/authenticator/Authenticator.php');
 
 // App
-require_once('Controller/GameApp.php');
+require_once('controller/Application.php');
 
 $authenticator = new Authenticator();
 
-$app = new \Controller\GameApp($authenticator);
+$app = new \A3\Controller\Application($authenticator);
 $app->run();
