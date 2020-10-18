@@ -14,10 +14,9 @@ class Login {
     }
 
     public function doLogin() {
-        $this->attemptCookieLoginIfCookiesAreSet();
-
-        if ($this->loginView->userWantsToLogin()) {
-            try {
+        try {
+            $this->attemptCookieLoginIfCookiesAreSet();
+            if ($this->loginView->userWantsToLogin()) {
                 $this->loginView->validateLoginForm();
 
                 $username = $this->loginView->getRequestUserName();
@@ -32,10 +31,10 @@ class Login {
                 }
 
                 $this->loginView->redirectIndex();
-            } catch (\Exception $e) {
-                $this->flashMessage->set($e->getMessage());
-                $this->loginView->redirectIndex();
             }
+        } catch (\Exception $e) {
+            $this->flashMessage->set($e->getMessage());
+            $this->loginView->redirectIndex();
         }
     }
 
