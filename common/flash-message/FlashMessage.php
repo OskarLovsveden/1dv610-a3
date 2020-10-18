@@ -17,12 +17,6 @@ class FlashMessage {
         $this->flashMessageShouldPersistOneReload = true;
     }
 
-    public function remove() {
-        if ($this->sessionStorage->hasValue()) {
-            $this->sessionStorage->removeValue();
-        }
-    }
-
     public function get(): string {
         if ($this->flashMessageShouldPersistOneReload) {
             return $this->sessionStorage->getValue();
@@ -30,10 +24,16 @@ class FlashMessage {
 
         if ($this->sessionStorage->hasValue()) {
             $message = $this->sessionStorage->getValue();
-            $this->sessionStorage->removeValue();
+            $this->remove();
 
             return $message;
         }
         return "";
+    }
+
+    private function remove() {
+        if ($this->sessionStorage->hasValue()) {
+            $this->sessionStorage->removeValue();
+        }
     }
 }
