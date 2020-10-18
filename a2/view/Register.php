@@ -8,18 +8,16 @@ class Register {
 	private static $password = 'RegisterView::Password';
 	private static $passwordRepeat = 'RegisterView::PasswordRepeat';
 	private static $messageId = 'RegisterView::Message';
-
 	private static $registerURL = "?register";
-	private static $usernameInputIndex = __CLASS__ . '::usernameInputIndex';
 
 	private $registerFormErrors = array();
 
 	private $flashMessage;
 	private $usernameInputSession;
 
-	public function __construct(\FlashMessage $flashMessage) {
+	public function __construct(\FlashMessage $flashMessage, \SessionStorage $usernameInputSession) {
 		$this->flashMessage = $flashMessage;
-		$this->usernameInputSession = new \SessionStorage(self::$usernameInputIndex);
+		$this->usernameInputSession = $usernameInputSession;
 	}
 
 	public function userWantsToRegister() {
@@ -30,6 +28,8 @@ class Register {
 		$username = $this->getRequestUserName();
 		$password = $this->getRequestPassword();
 		$passwordRepeat = $this->getRequestPasswordRepeat();
+
+		$this->usernameInputSession->store(strip_tags($username));
 
 		if (strlen($username) < 3) {
 			array_push($this->registerFormErrors, "Username has too few characters, at least 3 characters.");
@@ -48,7 +48,6 @@ class Register {
 		}
 
 		if (!empty($this->registerFormErrors)) {
-			$this->usernameInputSession->store(strip_tags($username));
 			$brSeparatedErrors = implode("<br>", $this->registerFormErrors);
 			throw new \Exception($brSeparatedErrors);
 		}
@@ -82,10 +81,10 @@ class Register {
 		header("Location: /a2/" . self::$registerURL . "");
 	}
 
-	public function getRequestUserName() {
+	public function getRequestUserName(): string {
 		return $_POST[self::$username];
 	}
-	public function getRequestPassword() {
+	public function getRequestPassword(): string {
 		return $_POST[self::$password];
 	}
 
@@ -116,7 +115,7 @@ class Register {
         </form>';
 	}
 
-	private function getRequestPasswordRepeat() {
+	private function getRequestPasswordRepeat(): string {
 		return $_POST[self::$passwordRepeat];
 	}
 }
