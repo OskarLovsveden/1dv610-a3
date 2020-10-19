@@ -18,6 +18,11 @@ class Layout {
         <meta charset="utf-8">
         <title>Random Number Game</title>
         </head>
+        <nav>
+        <a href="/a3/">Start</a> |
+        <a href="/a3/?login">Login/Register</a> |
+        <a href="/a3/?highscore">Highscore</a>
+        </nav>
         <body>
         <h1>Random Number Guessing Game</h1>
         <div class="container">';
