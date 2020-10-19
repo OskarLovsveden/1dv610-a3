@@ -2,6 +2,9 @@
 
 require_once('../common/session-storage/SessionStorage.php');
 
+/**
+ * Requires the use of SessionStorage.php module
+ */
 class FlashMessage {
     private static $flashMessageSessionIndex = __NAMESPACE__ . __CLASS__ . '::SessionIndex';
     private $flashMessageShouldPersistOneReload = false;

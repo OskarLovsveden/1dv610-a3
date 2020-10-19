@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 class Settings {
     private $dbHost;
     private $dbUser;
