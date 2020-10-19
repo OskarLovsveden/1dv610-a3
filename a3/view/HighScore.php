@@ -16,7 +16,10 @@ class HighScore {
         $ret = "<ul>";
         foreach ($hsi as $item) {
             $ret .= "<li>";
-            $ret .= $item->getPlayer() . " | " . $item->getDifficulty() . " | " . $item->getScore();
+            $ret .= "Name: " . $item->getPlayer() .  "<br/>";
+            $ret .= "Difficulty: " . $item->getDifficulty() .  "<br/>";
+            $ret .= "Score: " . $item->getScore() .  "<br/>";
+            $ret .= "~";
             $ret .= "</li>";
         }
         $ret .= "</ul>";
