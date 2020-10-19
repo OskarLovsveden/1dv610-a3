@@ -22,20 +22,6 @@ class Game {
         $this->gameState = $gameState;
     }
 
-    public function userWantsToSetDifficulty(): bool {
-        return isset($_POST[self::$difficulty]);
-    }
-
-    public function validateDifficultyForm() {
-        if (!$_POST[self::$difficulty]) {
-            throw new \Exception("Please enter a difficulty to play");
-        }
-    }
-
-    public function getDifficulty(): string {
-        return $_POST[self::$difficulty];
-    }
-
     public function userWantsToGuess(): bool {
         return isset($_POST[self::$guess]);
     }
