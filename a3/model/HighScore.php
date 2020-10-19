@@ -14,10 +14,10 @@ class HighScore {
     }
 
     public function sort() {
-        usort($this->items, array($this, 'comparePeople'));
+        usort($this->items, array($this, 'compareScores'));
     }
 
-    private function comparePeople(\A3\Model\HighScoreItem $h1, \A3\Model\HighScoreItem $h2) {
-        return strcmp($h1->getDifficulty(), $h2->getDifficulty());
+    private function compareScores(\A3\Model\HighScoreItem $a, \A3\Model\HighScoreItem $b) {
+        return [$b->getDifficulty(), $b->getScore()] <=> [$a->getDifficulty(), $a->getScore()];
     }
 }
