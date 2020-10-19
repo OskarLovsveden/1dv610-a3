@@ -9,17 +9,31 @@ class Game {
     private static $save = __NAMESPACE__ . __CLASS__ . "::save";
     private static $reset = __NAMESPACE__ . __CLASS__ . "::reset";
 
-    private $title;
+    private $guessTitle;
     private $message;
 
     private $flashMessage;
     private $gameState;
 
     public function __construct(\FlashMessage $flashMessage, \A3\Model\GameState $gameState) {
-        $this->title = "Guess a number between " . $gameState->getMinNumberToBeGuessed() . "-" . $gameState->getMaxNumberToBeGuessed();
+        $this->guessTitle = "Guess a number between " . $gameState->getMinNumberToBeGuessed() . "-" . $gameState->getMaxNumberToBeGuessed();
 
         $this->flashMessage = $flashMessage;
         $this->gameState = $gameState;
+    }
+
+    public function userWantsToSetDifficulty(): bool {
+        return isset($_POST[self::$difficulty]);
+    }
+
+    public function validateDifficultyForm() {
+        if (!$_POST[self::$difficulty]) {
+            throw new \Exception("Please enter a difficulty to play");
+        }
+    }
+
+    public function getDifficulty(): string {
+        return $_POST[self::$difficulty];
     }
 
     public function userWantsToGuess(): bool {
@@ -36,7 +50,7 @@ class Game {
         return $_POST[self::$number];
     }
 
-    public function userWantsToSaveHighScore() {
+    public function userWantsToSaveHighScore(): bool {
         return isset($_POST[self::$save]);
     }
 
@@ -55,11 +69,27 @@ class Game {
     public function getHTML(bool $userLoggedIn, bool $gameWon): string {
         $this->message = $this->flashMessage->get();
 
-        if ($gameWon) {
-            return $this->gameWonHTML($userLoggedIn);
-        } else {
+        if ($gameWon === FALSE) {
             return $this->playGameHTML();
+        } else {
+            return $this->gameWonHTML($userLoggedIn);
         }
+    }
+
+    private function playGameHTML(): string {
+        return '
+        <form method="post"> 
+        <fieldset>
+        <legend>' . $this->guessTitle . '</legend>
+        <p>' . $this->message . '</p>
+        
+        <label for="' . self::$number . '">Enter your guess here :</label>
+        <input autofocus type="text" id="' . self::$number . '" name="' . self::$number . '"/>
+        
+        <input type="submit" name="' . self::$guess . '" value="Guess" />
+        </fieldset>
+        </form>
+        ';
     }
 
     private function gameWonHTML(bool $userLoggedIn): string {
@@ -76,22 +106,5 @@ class Game {
         $ret .= '<form method="post"><input type="submit" name="' . self::$reset . '" value="Reset game" /></form>';
 
         return $ret;
-    }
-
-    private function playGameHTML(): string {
-        return '
-        <form method="post"> 
-        <fieldset>
-        <legend>' . $this->title . '</legend>
-        <p>' . $this->message . '</p>
-        
-        <label for="' . self::$number . '">Write your guess here :</label>
-        <input autofocus type="text" id="' . self::$number . '" name="' . self::$number . '"/>
-        
-        <input type="submit" name="' . self::$guess . '" value="Guess" />
-        </fieldset>
-        </form>
-        ' . 'Number To be guessed: ' . $this->gameState->getNumberToBeGuessed() . '
-        ';
     }
 }

@@ -54,13 +54,6 @@ class Register {
 		}
 	}
 
-	/**
-	 * Create HTTP response
-	 *
-	 * Should be called after a login attempt has been determined
-	 *
-	 * @return  void BUT writes to standard output and cookies!
-	 */
 	public function response() {
 		$message = $this->flashMessage->get();
 
@@ -89,11 +82,6 @@ class Register {
 		return $_POST[self::$password];
 	}
 
-	/**
-	 * Generate HTML code on the output buffer for the logout button
-	 * @param $message, String output message
-	 * @return  void, BUT writes to standard output!
-	 */
 	private function generateRegisterFormHTML($message, $usernameInputValue) {
 		return '
         <h2>Register new user</h2>

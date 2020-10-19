@@ -84,41 +84,18 @@ class Login {
 		return isset($_POST[self::$keep]);
 	}
 
-	/**
-	 * Create HTTP response
-	 *
-	 * Should be called after a login attempt has been determined
-	 *
-	 * @return  void BUT writes to standard output and cookies!
-	 */
 	public function response() {
 		$message = $this->flashMessage->get();
 
-		$response = "";
 		$usernameInputValue = "";
 
 		if ($this->usernameInputSession->hasValue()) {
 			$usernameInputValue = $this->usernameInputSession->getValue();
 		}
 
-		$response .= $this->generateLoginFormHTML($message, $usernameInputValue);
-
-		return $response;
+		return $this->generateLoginFormHTML($message, $usernameInputValue);
 	}
 
-	public function generateLogoutButtonHTML() {
-		return '
-		<form  method="post" >
-		<input type="submit" name="' . self::$logout . '" value="logout"/>
-		</form>
-		';
-	}
-
-	/**
-	 * Generate HTML code on the output buffer for the logout button
-	 * @param $message, String output message
-	 * @return  void, BUT writes to standard output!
-	 */
 	private function generateLoginFormHTML($message, $usernameInputValue) {
 		return '
 		<form method="post" > 
@@ -128,10 +105,10 @@ class Login {
 		
 		<label for="' . self::$name . '">Username :</label>
 		<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $usernameInputValue . '" />
-
+		
 		<label for="' . self::$password . '">Password :</label>
 		<input type="password" id="' . self::$password . '" name="' . self::$password . '" />
-
+		
 		<label for="' . self::$keep . '">Keep me logged in  :</label>
 		<input type="checkbox" id="' . self::$keep . '" name="' . self::$keep . '" />
 		
@@ -139,5 +116,13 @@ class Login {
 		</fieldset>
 		</form>
 		';
+	}
+
+	public function generateLogoutButtonHTML() {
+		return '
+								<form  method="post" >
+								<input type="submit" name="' . self::$logout . '" value="logout"/>
+								</form>
+								';
 	}
 }

@@ -5,7 +5,6 @@ namespace A3\View;
 class Layout {
     private static $login = "login";
     private static $register = "register";
-    private static $logout = "logout";
     private static $highscore = "highscore";
 
     private $loginView;
@@ -13,7 +12,12 @@ class Layout {
     private $gameView;
     private $highScoreView;
 
-    public function __construct(\A3\View\Login $loginView, \A3\View\Register $registerView, \A3\View\Game $gameView, \A3\View\HighScore $highScoreView) {
+    public function __construct(
+        \A3\View\Login $loginView,
+        \A3\View\Register $registerView,
+        \A3\View\Game $gameView,
+        \A3\View\HighScore $highScoreView
+    ) {
         $this->loginView = $loginView;
         $this->registerView = $registerView;
         $this->gameView = $gameView;
@@ -29,7 +33,7 @@ class Layout {
         <title>Random Number Game</title>
         </head>
         <nav>
-        <a href="/a3/">Start</a> | ';
+        <a href="/a3/">Play</a> | ';
 
         if (!$userLoggedIn) {
             $html .= '<a href="/a3/?' . self::$login . '">Login</a> | ';
