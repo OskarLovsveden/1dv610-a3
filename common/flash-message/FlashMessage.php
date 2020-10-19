@@ -3,7 +3,7 @@
 require_once('../common/session-storage/SessionStorage.php');
 
 class FlashMessage {
-    private static $flashMessageSessionIndex = __CLASS__ . '::SessionIndex';
+    private static $flashMessageSessionIndex = __NAMESPACE__ . __CLASS__ . '::SessionIndex';
     private $flashMessageShouldPersistOneReload = false;
 
     private $sessionStorage;
