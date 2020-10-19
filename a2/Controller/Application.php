@@ -14,7 +14,7 @@ require_once('view/DateTime.php');
 require_once('view/Layout.php');
 
 class Application {
-    private static $usernameInputIndex = __CLASS__ . '::usernameInputIndex';
+    private static $usernameInputIndex = __NAMESPACE__ . __CLASS__ . '::usernameInputIndex';
 
     private $loginView;
     private $registerView;
