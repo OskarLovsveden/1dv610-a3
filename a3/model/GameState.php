@@ -3,10 +3,10 @@
 namespace A3\Model;
 
 class GameState {
-    private static $numberToBeGuessedSessionIndex = __CLASS__ . "::numberToBeGuessedSessionIndex";
-    private static $correctGuessSessionIndex = __CLASS__ . "::correctGuessSessionIndex";
-    private static $amountOfTriesSessionIndex = __CLASS__ . "::amountOfTriesSessionIndex";
-    private static $gameWonSessionIndex = __CLASS__ . "::gameWonSessionIndex";
+    private static $numberToBeGuessedSessionIndex = __NAMESPACE__ . __CLASS__ . "::numberToBeGuessedSessionIndex";
+    private static $correctGuessSessionIndex = __NAMESPACE__ . __CLASS__ . "::correctGuessSessionIndex";
+    private static $amountOfTriesSessionIndex = __NAMESPACE__ . __CLASS__ . "::amountOfTriesSessionIndex";
+    private static $gameWonSessionIndex = __NAMESPACE__ . __CLASS__ . "::gameWonSessionIndex";
 
     private $randomNumber;
 
