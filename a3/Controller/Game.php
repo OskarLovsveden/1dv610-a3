@@ -49,10 +49,13 @@ class Game {
 
     public function doSaveHighScore() {
         if ($this->gameView->userWantsToSaveHighScore()) {
+            $player = $this->authenticator->getLoggedInUser();
             $difficulty = $this->gameState->getMaxNumberToBeGuessed();
             $numberOfTries = $this->gameState->getAmountOfTries();
 
-            $this->highScoreDAL->save($difficulty, $numberOfTries);
+            $highScoreItem = new \A3\Model\HighScoreItem($player, $difficulty, $numberOfTries);
+
+            $this->highScoreDAL->save($highScoreItem);
             $this->gameState->reset();
             $this->gameView->redirectIndex();
         }
