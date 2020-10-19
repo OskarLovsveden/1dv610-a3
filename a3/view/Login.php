@@ -46,6 +46,10 @@ class Login {
 		header("Location: /a3");
 	}
 
+	public function redirectLogin() {
+		header("Location: /a3/?login");
+	}
+
 	public function setUserCookies($cookieName, $cookiePassword) {
 		setcookie(self::$cookieNameKey, $cookieName, time() + (86400 * 30), "/");
 		setcookie(self::$cookiePasswordKey, $cookiePassword, time() + (86400 * 30), "/");
@@ -120,9 +124,9 @@ class Login {
 
 	public function generateLogoutButtonHTML() {
 		return '
-								<form  method="post" >
-								<input type="submit" name="' . self::$logout . '" value="logout"/>
-								</form>
-								';
+		<form  method="post" >
+		<input type="submit" name="' . self::$logout . '" value="logout"/>
+		</form>
+		';
 	}
 }

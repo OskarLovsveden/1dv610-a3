@@ -27,6 +27,7 @@ class Login {
                     $this->keepUserLoggedIn($username, $password);
                 } else {
                     $this->authenticator->login($username, $password);
+                    $this->flashMessage->set("Welcome");
                 }
 
                 $this->loginView->redirectIndex();
@@ -34,7 +35,7 @@ class Login {
         } catch (\Exception $e) {
             $this->flashMessage->set($e->getMessage());
             $this->loginView->unsetUserCookies();
-            $this->loginView->redirectIndex();
+            $this->loginView->redirectLogin();
         }
     }
 
@@ -46,6 +47,7 @@ class Login {
                 $this->loginView->unsetUserCookies();
             }
 
+            $this->flashMessage->set("Bye bye!");
             $this->loginView->redirectIndex();
         }
     }
@@ -56,6 +58,8 @@ class Login {
 
         $cookiePassword = $this->authenticator->getCookiePassword();
         $this->loginView->setUserCookies($username, $cookiePassword);
+
+        $this->flashMessage->set("Welcome and you will be remembered");
     }
 
     private function attemptCookieLoginIfCookiesAreSet() {
@@ -66,6 +70,11 @@ class Login {
             $cookieUsername = $this->loginView->getUserCookieName();
             $cookiePassword = $this->loginView->getUserCookiePassword();
             $this->authenticator->loginWithCookie($cookieUsername, $cookiePassword);
+
+            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+                $this->flashMessage->set("Welcome back with cookie");
+            }
+
             $this->loginView->redirectIndex();
         }
     }
