@@ -3,11 +3,13 @@
 namespace A3\Controller;
 
 class Game {
+    private $authenticator;
     private $flashMessage;
     private $gameView;
     private $gameState;
 
-    public function __construct(\FlashMessage $flashMessage, \A3\View\Game $gameView, \A3\Model\GameState $gameState) {
+    public function __construct(\Authenticator $authenticator, \FlashMessage $flashMessage, \A3\Model\GameState $gameState, \A3\View\Game $gameView) {
+        $this->authenticator = $authenticator;
         $this->flashMessage = $flashMessage;
         $this->gameView = $gameView;
         $this->gameState = $gameState;
