@@ -3,11 +3,11 @@
 namespace A3\View;
 
 class Game {
-    private static $number = __CLASS__ . "::number";
-    private static $guess = __CLASS__ . "::guess";
+    private static $number = __NAMESPACE__ . __CLASS__ . "::number";
+    private static $guess = __NAMESPACE__ . __CLASS__ . "::guess";
 
-    private static $save = __CLASS__ . "::save";
-    private static $reset = __CLASS__ . "::reset";
+    private static $save = __NAMESPACE__ . __CLASS__ . "::save";
+    private static $reset = __NAMESPACE__ . __CLASS__ . "::reset";
 
     private $title;
     private $message;
@@ -48,23 +48,31 @@ class Game {
         header("Location: /a3");
     }
 
-    public function getHTML(bool $gameWon): string {
+    public function redirectHighScore() {
+        header("Location: /a3/?highscore");
+    }
+
+    public function getHTML(bool $userLoggedIn, bool $gameWon): string {
         $this->message = $this->flashMessage->get();
 
         if ($gameWon) {
-            return $this->gameWonHTML();
+            return $this->gameWonHTML($userLoggedIn);
         } else {
             return $this->playGameHTML();
         }
     }
 
-    private function gameWonHTML(): string {
+    private function gameWonHTML(bool $userLoggedIn): string {
         $correctGuess = $this->gameState->getCorrectAnswer();
         $amountOfTries = $this->gameState->getAmountOfTries();
 
         $ret = '<h1>Correct number was ' . $correctGuess . '!</h1>';
         $ret .= '<h3>You finished in ' . $amountOfTries . ' number of tries!</h3>';
-        $ret .= '<form method="post"><input type="submit" name="' . self::$save . '" value="Save to highscore" /></form>';
+
+        if ($userLoggedIn) {
+            $ret .= '<form method="post"><input type="submit" name="' . self::$save . '" value="Save to highscore" /></form>';
+        }
+
         $ret .= '<form method="post"><input type="submit" name="' . self::$reset . '" value="Reset game" /></form>';
 
         return $ret;
