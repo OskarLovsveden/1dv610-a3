@@ -18,6 +18,6 @@ class HighScore {
     }
 
     private function compareScores(\A3\Model\HighScoreItem $a, \A3\Model\HighScoreItem $b) {
-        return [$b->getDifficulty(), $b->getScore()] <=> [$a->getDifficulty(), $a->getScore()];
+        return [$b->getDifficulty(), $a->getScore()] <=> [$a->getDifficulty(), $b->getScore()];
     }
 }
