@@ -5,14 +5,22 @@ namespace A3\Controller;
 class Game {
     private $authenticator;
     private $flashMessage;
-    private $gameView;
     private $gameState;
+    private $highScoreDAL;
+    private $gameView;
 
-    public function __construct(\Authenticator $authenticator, \FlashMessage $flashMessage, \A3\Model\GameState $gameState, \A3\View\Game $gameView) {
+    public function __construct(
+        \Authenticator $authenticator,
+        \FlashMessage $flashMessage,
+        \A3\Model\GameState $gameState,
+        \A3\Model\DAL\HighScoreDAL $highScoreDAL,
+        \A3\View\Game $gameView
+    ) {
         $this->authenticator = $authenticator;
         $this->flashMessage = $flashMessage;
-        $this->gameView = $gameView;
         $this->gameState = $gameState;
+        $this->highScoreDAL = $highScoreDAL;
+        $this->gameView = $gameView;
     }
 
     public function doPlay() {
@@ -59,7 +67,7 @@ class Game {
 
             $this->highScoreDAL->save($highScoreItem);
             $this->gameState->reset();
-            $this->gameView->redirectIndex();
+            $this->gameView->redirectHighScore();
         }
     }
 
