@@ -12,6 +12,8 @@ require_once("controller/Game.php");
 
 // Model
 require_once("model/DAL/HighScoreDAL.php");
+require_once("model/HighScore.php");
+require_once("model/HighScoreItem.php");
 require_once("model/RandomNumber.php");
 require_once("model/GameState.php");
 
@@ -33,7 +35,7 @@ class Application {
 
     private $gameController;
 
-    public function __construct() {
+    public function __construct(\Authenticator $authenticator) {
         $this->flashMessage = new \FlashMessage();
         $this->randomNumber = new \A3\Model\RandomNumber(1, 100);
         $this->gameState = new \A3\Model\GameState($this->randomNumber);
@@ -45,7 +47,7 @@ class Application {
         $this->gameView = new \A3\View\Game($this->flashMessage, $this->gameState);
         $this->layoutView = new \A3\View\Layout($this->gameView, $this->highScoreView);
 
-        $this->gameController = new \A3\Controller\Game($this->flashMessage, $this->gameView, $this->gameState);
+        $this->gameController = new \A3\Controller\Game($authenticator, $this->flashMessage, $this->gameState, $this->gameView);
     }
 
     public function run() {
