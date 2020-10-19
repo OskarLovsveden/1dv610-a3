@@ -1,7 +1,8 @@
 <?php
 
-session_start();
-
+/**
+ * Requires the use of session_start()
+ */
 class SessionStorage {
   private $index;
 
