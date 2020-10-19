@@ -93,6 +93,10 @@ class Authenticator {
         }
     }
 
+    public function getLoggedInUser(): string {
+        return $this->userSession->getValue();
+    }
+
     public function getCookiePassword(): string {
         return $this->rememberMeCookie->getPassword();
     }
