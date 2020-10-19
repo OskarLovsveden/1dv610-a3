@@ -1,0 +1,27 @@
+<?php
+
+session_start();
+
+class Settings {
+    private $dbHost;
+    private $dbUser;
+    private $dbPass;
+    private $db;
+
+    public function __construct() {
+        $this->dbHost = "localhost";
+        $this->dbUser = "your db username here";
+        $this->dbPass = "your bd password here";
+        $this->db = "RandomNumberGuessingGame";
+    }
+
+    public function getDBConnection(): \mysqli {
+        $mysqli = new \mysqli($this->dbHost, $this->dbUser, $this->dbPass, $this->db);
+
+        if ($mysqli->connect_errno) {
+            throw new \Exception("Connect failed: %s" . $mysqli->connect_error);
+        }
+
+        return $mysqli;
+    }
+}
