@@ -5,9 +5,11 @@ namespace A3\View;
 class Layout {
 
     private $gameView;
+    private $highScoreView;
 
     public function __construct(\A3\View\Game $gameView, \A3\View\HighScore $highScoreView) {
         $this->gameView = $gameView;
+        $this->highScoreView = $highScoreView;
     }
 
     public function renderHTML(bool $gameWon) {
