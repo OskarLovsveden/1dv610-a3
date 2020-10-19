@@ -13,10 +13,10 @@ require_once('model/RememberMeCookie.php');
 require_once('Settings.php');
 
 class Authenticator {
-    private static $userSessionIndex = __CLASS__ . '::userSessionIndex';
+    private static $userSessionIndex = __NAMESPACE__ . __CLASS__ . '::userSessionIndex';
 
     // TODO Prevent Session hijacking (This makes automatic tests never stop loading)
-    // private static $browserSessionIndex = __CLASS__ . '::browserSessionIndex';
+    // private static $browserSessionIndex = __NAMESPACE__ . __CLASS__ . '::browserSessionIndex';
 
     private static $httpAgent = 'HTTP_USER_AGENT';
 
