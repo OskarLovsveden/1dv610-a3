@@ -1,5 +1,4 @@
 <?php
-session_start();
 
 // Authenticator
 require_once('../common/authenticator/Authenticator.php');
